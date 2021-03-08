@@ -1,37 +1,61 @@
 var firebaseConfig = {
-    apiKey: "AIzaSyC8s3-L2FXYNvWIiXDY6GFxvRmSmzMkd2Y",
-    authDomain: "coupons-project-484c5.firebaseapp.com",
-    projectId: "coupons-project-484c5",
-    databaseURL: "https://coupons-project-484c5-default-rtdb.firebaseio.com",
-    storageBucket: "coupons-project-484c5.appspot.com",
-    messagingSenderId: "887250421341",
-    appId: "1:887250421341:web:a430e6fc7e30ca1edbafb4"
-  };
-  // Initialize Firebase
+  apiKey: "AIzaSyBz6HqJAKkPE0K9May5cdw9sFBW2K7i5f0",
+  authDomain: "bookmarkit-26f28.firebaseapp.com",
+  databaseURL: "https://bookmarkit-26f28-default-rtdb.firebaseio.com",
+  projectId: "bookmarkit-26f28",
+  storageBucket: "bookmarkit-26f28.appspot.com",
+  messagingSenderId: "92066820035",
+  appId: "1:92066820035:web:4fc99df169ba26a9d89776"
+}
   firebase.initializeApp(firebaseConfig);
 
+  const db = firebase.firestore();
 
+
+  firebase.auth().onAuthStateChanged(user => {
+    if(user) {
+      chrome.runtime.sendMessage({command: "userLoggedIn", user: user}, response => {
+      })
+    }else{
+      chrome.runtime.sendMessage({command: "userLoggedOut"}, response => {
+
+      })
+    }
+  })
+  
   chrome.runtime.onMessage.addListener((message,sender, callback) => {
-    generateDetailWindow();
-    callback({
-      message: "success"
-    })
+    if(message.command == "SignUpUser"){
+      firebase.auth().createUserWithEmailAndPassword(message.data.email, message.data.password)
+      .then(credentials => {
+        console.log(credentials)
+        callback({
+          status : "success",
+          message: "message received correctly"
+        })
+      }).catch(e => {
+        console.log("error: " + e)
+        callback({
+          status: "failed",
+          message: e.message,
+        })
+    })      
+      
+    }else if(message.command == "SignOutUser"){
+      firebase.auth().signOut()
+      .then(() => {
+        callback({
+          status: "success"
+        })
+      })
+    }
+    return true;
 })
 
-  chrome.runtime.onMessage.addListener(
-    function(message, callback) {
-      
-      if (message == "changeColor"){
-        chrome.tabs.executeScript({
-          code: 'document.body.style.backgroundColor="orange"'
-        });
-      }
-      return true
-    });
+chrome.runtime.onMessage.addListener((message, sender, callback) => {
+  let retrievedUser = firebase.auth().currentUser;
+  callback({
+    user: retrievedUser
+  })
+})
 
     
-function generateDetailWindow(tabUrl, tabTitle, tabFavicon){
-   chrome.tabs.executeScript({
-        file: 'bookmark.js'
-      });
-}
