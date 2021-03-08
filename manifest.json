@@ -1,0 +1,26 @@
+{
+    "manifest_version": 2,
+    "name": "Bookmark It!",
+    "description": "Organize your bookmarks like never before",
+    "version": "0.0.1",
+    "browser_action": {
+        "default_icon": {
+            "16": "/assets/icons/16x16.png",
+            "32": "/assets/icons/32x32.png",
+            "128": "/assets/icons/128x128.png"
+        },
+        "default_popup": "popup.html"
+    },
+
+    "permissions": [
+        "activeTab",
+        "<all_urls>",
+        "tabs"
+    ],
+
+    "background":{
+        "page": "background.html",
+        "persistant": "false"
+    },
+    "content_security_policy": "script-src 'self' https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com https://cdnjs.cloudflare.com; object-src 'self'"
+}
