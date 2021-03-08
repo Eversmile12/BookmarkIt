@@ -30,7 +30,7 @@ var firebaseConfig = {
         console.log(credentials)
         callback({
           status : "success",
-          message: "message received correctly"
+          message: "user registered"
         })
       }).catch(e => {
         console.log("error: " + e)
@@ -40,11 +40,26 @@ var firebaseConfig = {
         })
     })      
       
-    }else if(message.command == "SignOutUser"){
+    }else if(message.command == "LoginUser"){
+      firebase.auth().signInWithEmailAndPassword(message.data.email, message.data.password)
+      .then(credentials => {
+        callback({
+          status: "success",
+          message: "user logged in"
+        })
+      }).catch(e => {
+        console.log(e.message);
+        callback({
+          status: "failed",
+          message: "User not found"
+        })
+    })
+    } else if(message.command == "SignOutUser"){
       firebase.auth().signOut()
       .then(() => {
         callback({
-          status: "success"
+          status: "success",
+          message: "user logged out"
         })
       })
     }
