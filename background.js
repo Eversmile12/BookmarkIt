@@ -9,16 +9,15 @@ var firebaseConfig = {
 }
   firebase.initializeApp(firebaseConfig);
 
-  const db = firebase.firestore();
-
 
   firebase.auth().onAuthStateChanged(user => {
     if(user) {
       chrome.runtime.sendMessage({command: "userLoggedIn", user: user}, response => {
+        // user handler fired
       })
     }else{
       chrome.runtime.sendMessage({command: "userLoggedOut"}, response => {
-
+        // user handler fired
       })
     }
   })
@@ -67,10 +66,14 @@ var firebaseConfig = {
 })
 
 chrome.runtime.onMessage.addListener((message, sender, callback) => {
-  let retrievedUser = firebase.auth().currentUser;
-  callback({
-    user: retrievedUser
-  })
+  if(message.command == "checkUser"){
+    let retrievedUser = firebase.auth().currentUser;
+    callback({
+      user: retrievedUser
+    })
+  }
+  
+  return true;
 })
 
     

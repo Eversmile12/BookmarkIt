@@ -1,10 +1,13 @@
-<div class="login-container">
+<div class="form-container">
     <form id="login-form">
-        <input type="email" id="login-email">
-        <label for="login-email">Email address</label>
-        <input type="password" id="login-password">
-        <label for="login-password">Insert password</label>
-        <button type="submit">login</button>
+        <div class="input-field">
+            <input class="input" type="email" id="login-email" placeholder="Email">
+
+            <input class="input" type="password" id="login-password" placeholder="Password">
+        </div>     
+      
+        <button class="btn-main" type="submit">login</button>
     </form>
-    <button class="signup-redirect">signup</button>
+    <p>or</p>
+    <a class="btn-text" id="signup-redirect">Signup</a>
 </div>
