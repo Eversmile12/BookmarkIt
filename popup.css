@@ -29,6 +29,13 @@ html{
     margin-bottom: 2rem;
 }
 
+.footer-main{
+    background-color:#0F7EE4 ;
+    font-size: 1.3rem;
+    color: #f7f7f7;
+    text-align: center;
+}
+
 .status-container{
     text-align: left;
     margin-bottom: 3rem;
@@ -54,7 +61,9 @@ html{
 }
 
 .bookmark-item{
-    padding: .5rem 1rem;
+    padding: .5rem 0 ;
+    padding-left: 4rem;
+    position: relative;
 }
 
 .bookmark-item:nth-child(odd){
@@ -67,6 +76,34 @@ html{
 .bookmark-title{
     display: inline;
     font-size: 1.3rem;
+}
+
+.bookmark-link{
+    position: absolute;
+    top:50%;
+    right: 12%;
+    transform: translate(-50%, -50%);
+}
+
+.bookmark-copy-icon{
+    position: absolute;
+    top:50%;
+    right: 7%;
+    transform: translate(-50%, -50%);
+}
+
+.bookmark-icon{
+    position: absolute;
+    top:50%;
+    left: 2%;
+    transform: translate(-50%, -50%);
+}
+
+.bookmark-delete-icon{
+    position: absolute;
+    top:50%;
+    right: 2%;
+    transform: translate(-50%, -50%);
 }
 
  .text-dark{
@@ -88,8 +125,6 @@ html{
 .sub-header{
     letter-spacing: .1rem;
 }
-
-
 
 
 .btn-main{
@@ -120,9 +155,13 @@ html{
     width: 40%;
 }
 
-.bookmark-delete-icon{
-    float: right;
+.btn-disabled{
+    background-color: #b4b4b4;
+    cursor: not-allowed;
+    opacity: .5;
+    pointer-events: none; 
 }
+
 .input{
     display: block;
     padding: .5rem .5rem;
@@ -161,7 +200,7 @@ html{
 }
 .close-icon-container{
     position: absolute;
-    top: 5%;
+    top: 10%;
     right: 5%;
 }
 

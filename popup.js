@@ -11,61 +11,41 @@ function uiHandler(user) {
         searchBar.setAttribute("placeholder", "search");
         searchBar.classList.add("input");
         document.querySelector(".header-container").appendChild(searchBar)
-        searchBar.addEventListener("change", ()=>{
-            
+        searchBar.addEventListener("input", ()=>{
+            chrome.storage.local.get(["bookmarks"], (response) =>{
+                let bookmarksFiltered = response.bookmarks.filter((bookmark)=>{
+                    const searchbarValue = searchBar.value.toLowerCase()
+                    if( bookmark.doc_data.bm_tags.toLowerCase().includes(searchbarValue) || bookmark.doc_data.bm_title.toLowerCase().includes(searchbarValue) ){
+                        return true;
+                    }else{
+                        return false;
+                    };
+                })
+                console.log("bookmarks")
+                console.log(response.bookmarks)
+                console.log(bookmarksFiltered)
+                generateBookmarkListItem(bookmarksFiltered)
+            })
         })
         generateForm("actions.mustache", "loggedIn");
         chrome.runtime.sendMessage(
             { command: "fetchUserBookmarks", data: { uid: user.uid } },
             (response) => {
-                console.log(response);
-
-                if (response.content.length) {
-                    let container = document.querySelector(".status-container");
-                    container.innerHTML = "";
-                    let bookmarksList = document.createElement("ul");
-                    bookmarksList.classList.add("bookmark-list");
-
-                    response.content.forEach((bookmark) => {
-                        fetch("./views/bm-list-element.mustache")
-                            .then((response) => response.text())
-                            .then((template) => {
-                                var render = Mustache.render(template, {
-                                    icon: bookmark.doc_data.bm_icon,
-                                    title: bookmark.doc_data.bm_title,
-                                    url: bookmark.doc_data.bm_url,
-                                    dataId: bookmark.doc_id,
-                                });
-                                bookmarksList.innerHTML += render;
-                            });
-                    });
-                    container.appendChild(bookmarksList);
-                    // let deleteIcons = document.getElementsByClassName(
-                    //     "bookmark-delete-icon"
-                    // );
-                    // console.log(dele)
-                    // for (var i = 0; i < deleteIcons.length; i++) {
-                    //     deleteIcons[i].addEventListener("click", () => {
-                    //         console.log("hello");
-                    //     });
+                if (response.content.length ){
                     
-                    // .addEventListener("click", (e)=>{
-                    //     chrome.runtime.sendMessage({command: "deleteBookmark", data:{docId: e.target.parentElement.getAttribute("data-id")}}, response =>{
-
-                    //     })
-                    // })
-                    container.style.display = "block";
+                    console.log(response.content.length);
+                    generateBookmarkListItem(response.content);
+                    
+                    
                 } else {
+                    console.log("no bookmarks found")
                     let emptyList = document.createElement("P");
-                    emptyList.innerText =
-                        "Looks like there are no Bookmarks in there..\n Start by:";
-                    emptyList.classList.add(
-                        "paragraph-text",
-                        "margin-bottom-medium"
-                    );
-                    document
-                        .querySelector(".status-container")
-                        .appendChild(emptyList);
+                    emptyList.innerText = "Looks like there are no Bookmarks in there..\n Start by:";
+                    emptyList.classList.add( "paragraph-text", "margin-bottom-medium");
+                    const container = document.querySelector(".status-container")
+                    container.appendChild(emptyList);
+                    container.style.display = "block"
+                    container.style.textAlign = "center"
                 }
             }
         );
@@ -271,3 +251,99 @@ function toggleBookmarkOverlay(pageInfo) {
         bookmarkOverlay.style.display = "none";
     }
 }
+
+
+async function generateBookmarkListItem(bookmarks){
+    let container = document.querySelector(".status-container");
+    container.innerHTML = "";
+
+    let bookmarksList = document.createElement("ul");
+    bookmarksList.classList.add("bookmark-list");    
+    
+    bookmarks.forEach(async (bookmark) => {
+        const bookmarkItem = document.createElement("LI");
+        bookmarkItem.classList.add("bookmark-item");
+        
+        const bookmarkIcon = document.createElement("img");
+        bookmarkIcon.classList.add("bookmark-icon");
+        bookmarkIcon.setAttribute("width", "20");
+        bookmarkIcon.setAttribute("width", "20");
+        if(bookmark.doc_data.bm_icon !== ""){
+            bookmarkIcon.setAttribute("src", bookmark.doc_data.bm_icon);
+        }else{
+            bookmarkIcon.setAttribute("src","./assets/001-no-photos.png" )
+        }
+       
+        bookmarkIcon.setAttribute("alt", "icon of the bookmarked page");
+
+
+        const bookmarkTitle = document.createElement("P");
+        bookmarkTitle.innerText = bookmark.doc_data.bm_title;
+        bookmarkTitle.classList.add("bookmark-title");
+        
+        const bookmarkCopyLink = document.createElement("img");
+        bookmarkCopyLink.setAttribute("width", "15");
+        bookmarkCopyLink.setAttribute("height", "15");
+        bookmarkCopyLink.setAttribute("src", "./assets/001-copy.png");
+        bookmarkCopyLink.classList.add("bookmark-copy-icon")
+        bookmarkCopyLink.setAttribute("data-url", bookmark.doc_data.bm_url)
+        bookmarkCopyLink.addEventListener("click", (e) =>{
+            const str = e.target.dataset.url;
+            const el = document.createElement('textarea');
+            el.value = str;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand("copy");
+            document.body.removeChild(el)
+            alert("Link copied to the clipboard ")
+        })
+
+        const bookmarkLink = document.createElement("A");
+        bookmarkLink.setAttribute("href", bookmark.doc_data.bm_url)
+        bookmarkLink.setAttribute("target", "_blank")
+        bookmarkLink.classList.add("bookmark-link")
+
+        const linkIcon = document.createElement("img");
+        linkIcon.setAttribute("width", "15");
+        linkIcon.setAttribute("height", "15");
+        linkIcon.setAttribute("src", "./assets/001-external-link-symbol.png");
+        linkIcon.classList.add("bookmark-delete-icon")
+
+        bookmarkLink.appendChild(linkIcon)
+
+        const bookmarkDelete = document.createElement("img");
+        bookmarkDelete.setAttribute("data-id", bookmark.doc_id)
+        bookmarkDelete.setAttribute("width", "15");
+        bookmarkDelete.setAttribute("height", "15");
+        bookmarkDelete.setAttribute("src", "./assets/001-delete.png");
+        bookmarkDelete.classList.add("bookmark-delete-icon")
+        
+        bookmarkDelete.addEventListener("click", (e)=>{
+            chrome.runtime.sendMessage({command: "deleteBookmark", data:{docId: e.target.getAttribute("data-id")}}, response =>{
+                window.location.reload()
+            })
+        })
+
+        bookmarkItem.appendChild(bookmarkIcon);
+        bookmarkItem.appendChild(bookmarkTitle);
+        bookmarkItem.appendChild(bookmarkTitle);
+        bookmarkItem.appendChild(bookmarkLink);
+        bookmarkItem.appendChild(bookmarkCopyLink)
+        bookmarkItem.appendChild(bookmarkDelete);
+        
+        bookmarksList.appendChild(bookmarkItem);
+        
+
+
+    });
+
+    container.appendChild(bookmarksList);
+    container.style.display = "block";
+   
+}
+
+
+function copyLink(){
+    
+}
+

@@ -94,6 +94,7 @@ chrome.runtime.onMessage.addListener((message,sender,callback) =>{
       message: "bookmark added successfully"
     })
   }else if( message.command == "fetchUserBookmarks"){
+    chrome.storage.local.clear();
     firebase.firestore().collection("bookmarks").where("bm_user_uid", "==", message.data.uid).get()
     .then((snapshot) => {
       let docs = []
@@ -104,13 +105,19 @@ chrome.runtime.onMessage.addListener((message,sender,callback) =>{
           doc_id: doc.id,
         }
         docs.push(docData)
+        chrome.storage.local.set({bookmarks: docs}, ()=>{
+          console.log("bookmarks have been saved")
+        })
     })
       callback({
         content: docs
       })
     })
   }else if(message.command == "deleteBookmark"){
-    firebase.firestore().collection("bookmarks").doc(message.data.docId).delete();
+    firebase.firestore().collection("bookmarks").doc(message.data.docId).delete()
+    .then(
+      setTimeout(() => { callback(); }, 300)
+    );
   }
 
   return true;
