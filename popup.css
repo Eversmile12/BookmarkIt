@@ -17,9 +17,9 @@ html{
 
 }
 .main-container{
-    width: 50rem;
-    height: 30rem;
-    padding: 5rem 1rem;
+    width: 60rem;
+    height: 45rem;
+    padding: 2rem 1rem;
     background-color: #f7f7f7;
     text-align: center;
 }
@@ -29,6 +29,10 @@ html{
     margin-bottom: 2rem;
 }
 
+.status-container{
+    text-align: left;
+    margin-bottom: 3rem;
+}
 
 .bookmark-container-overlay{
     position: absolute;
@@ -36,9 +40,33 @@ html{
     height: 100%;
     top: 0;
     left: 0;
-    padding: 4rem 0;
+    padding: 8rem 0;
     text-align: center;
     background-color:  rgba(80, 90, 107, .97);
+}
+
+.bookmark-list{
+    border: 1px solid #333333;
+    height: 15rem;
+    overflow-y: scroll;
+    list-style: none;
+    border: none;
+}
+
+.bookmark-item{
+    padding: .5rem 1rem;
+}
+
+.bookmark-item:nth-child(odd){
+    background-color: #e9e9e9;
+}
+.bookmark-item:nth-child(even){
+    background-color: #f7f7f7;
+}
+
+.bookmark-title{
+    display: inline;
+    font-size: 1.3rem;
 }
 
  .text-dark{
@@ -51,29 +79,37 @@ html{
 }
 
 
+.paragraph-text{
+    color: rgba(39, 39, 39, 0.8);
+    line-height: 1.6;
+}
+
+
 .sub-header{
     letter-spacing: .1rem;
 }
 
 
-.input{
-    display: block;
-    padding: .5rem .5rem;
-}
+
 
 .btn-main{
     display: block;
     margin: 1rem auto;
     padding: .5rem 2.5rem;
-   
+    position: relative;
     background-color: #0F7EE4;
     color: #f7f7f7;
     
     border: none;
-    border-radius: 3px;
+    border-radius: 5px;
 
     font-weight: 600;
     font-size: 1.5rem;
+}
+
+.btn-main:active{
+    outline: none;
+    border: none;
 }
 
 .btn-medium{
@@ -81,16 +117,21 @@ html{
 }
 
 .btn-large{
-    width: 50%;
+    width: 40%;
 }
 
+.bookmark-delete-icon{
+    float: right;
+}
 .input{
+    display: block;
+    padding: .5rem .5rem;
     width: 50%;
+    border: 1px solid  rgba(58, 58, 58, 0.2);
     border-radius: 3px;
-    border: none;
     outline: none;
     margin: .5rem auto;
-    background-color: #f7f7f7;
+    background-color: #fafafa;
 
     
     color: rgba(58, 58, 58, 0.8);
@@ -111,11 +152,24 @@ html{
 .margin-bottom-small{
     margin-bottom: 1rem;
 }
+.margin-bottom-medium{
+    margin-bottom: 2rem;
+}
 
+.margin-top-medium{
+    margin-top: 2rem;
+}
 .close-icon-container{
     position: absolute;
     top: 5%;
     right: 5%;
+}
+
+.save-icon{
+    position: absolute;
+    top: 50%;
+    right: 5%;
+    transform: translate(-50%, -50%);
 }
 
 .filter-white{

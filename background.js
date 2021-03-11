@@ -76,4 +76,44 @@ chrome.runtime.onMessage.addListener((message, sender, callback) => {
   return true;
 })
 
+
+chrome.runtime.onMessage.addListener((message,sender,callback) =>{
+  console.log()
+  if(message.command == "addBookmark"){
+    let userId = firebase.auth().currentUser.uid
+    console.log(message.data.favIcon);
+    firebase.firestore().collection("bookmarks").add(({
+      bm_tags: message.data.tags,
+      bm_title: message.data.title,
+      bm_url: message.data.url.replaceAll("\"",""),
+      bm_icon: message.data.favIcon,
+      bm_user_uid: userId
+    }))
+    callback({
+      status: "success",
+      message: "bookmark added successfully"
+    })
+  }else if( message.command == "fetchUserBookmarks"){
+    firebase.firestore().collection("bookmarks").where("bm_user_uid", "==", message.data.uid).get()
+    .then((snapshot) => {
+      let docs = []
+      snapshot.docs.forEach(doc =>{
+        console.log(doc.data())
+        let docData = {
+          doc_data: doc.data(),
+          doc_id: doc.id,
+        }
+        docs.push(docData)
+    })
+      callback({
+        content: docs
+      })
+    })
+  }else if(message.command == "deleteBookmark"){
+    firebase.firestore().collection("bookmarks").doc(message.data.docId).delete();
+  }
+
+  return true;
+})
+
     
