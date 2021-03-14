@@ -6,7 +6,28 @@ window.onload = () => {
 
 function uiHandler(user) {
     if (user) {
-        const searchBar = document.createElement("input");
+        generateLoggedInUI(user);
+    } else {
+        generateForm("login-form.mustache", "login");
+    }
+}
+
+
+
+function generateLoggedInUI(user){
+    fetch("./views/actions.mustache")
+    .then(response => response.text())
+    .then(template => {
+        var render = Mustache.render(template);
+        document.querySelector(".actions-container").innerHTML = render;
+        setLoggedInListeners();
+        fetchBookmarks(user);
+        setUpSearchBar()
+    })
+}
+
+function setUpSearchBar(){
+    const searchBar = document.createElement("input");
         searchBar.setAttribute("type","text");
         searchBar.setAttribute("placeholder", "search");
         searchBar.classList.add("input");
@@ -21,44 +42,16 @@ function uiHandler(user) {
                         return false;
                     };
                 })
-                console.log("bookmarks")
-                console.log(response.bookmarks)
-                console.log(bookmarksFiltered)
                 generateBookmarkListItem(bookmarksFiltered)
             })
         })
-        generateForm("actions.mustache", "loggedIn");
-        chrome.runtime.sendMessage(
-            { command: "fetchUserBookmarks", data: { uid: user.uid } },
-            (response) => {
-                if (response.content.length ){
-                    
-                    console.log(response.content.length);
-                    generateBookmarkListItem(response.content);
-                    
-                    
-                } else {
-                    console.log("no bookmarks found")
-                    let emptyList = document.createElement("P");
-                    emptyList.innerText = "Looks like there are no Bookmarks in there..\n Start by:";
-                    emptyList.classList.add( "paragraph-text", "margin-bottom-medium");
-                    const container = document.querySelector(".status-container")
-                    container.appendChild(emptyList);
-                    container.style.display = "block"
-                    container.style.textAlign = "center"
-                }
-            }
-        );
-    } else {
-        generateForm("login-form.mustache", "login");
-    }
 }
 
 function generateForm(template, status) {
     fetch("./views/" + template)
         .then((response) => response.text())
         .then((template) => {
-            var render = Mustache.render(template, { synched: false });
+            var render = Mustache.render(template);
             document.querySelector(".actions-container").innerHTML = render;
             if (status == "login") {
                 document
@@ -347,3 +340,28 @@ function copyLink(){
     
 }
 
+
+
+function fetchBookmarks(user){
+    chrome.runtime.sendMessage(
+        { command: "fetchUserBookmarks", data: { uid: user.uid } },
+        (response) => {
+            if (response.content.length ){
+                
+                console.log(response.content.length);
+                generateBookmarkListItem(response.content);
+                
+                
+            } else {
+                console.log("no bookmarks found")
+                let emptyList = document.createElement("P");
+                emptyList.innerText = "Looks like there are no Bookmarks in there..\n Start by:";
+                emptyList.classList.add( "paragraph-text", "margin-bottom-medium");
+                const container = document.querySelector(".status-container")
+                container.appendChild(emptyList);
+                container.style.display = "block"
+                container.style.textAlign = "center"
+            }
+        }
+    );
+}
