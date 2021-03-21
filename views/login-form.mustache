@@ -1,13 +1,36 @@
 <div class="form-container">
-    <form id="login-form">
-        <div class="input-field">
-            <input class="input" type="email" id="login-email" placeholder="Email">
+    <div class="login-form__text-box">
+        <div class="login-form__user-info-container">
+            <div class="profile-container margin-bottom-medium">
+                <div class="image-container">                   
+                    <img src="assets/male_profile_image.svg" class="login-form-image margin-bottom-small">
+                    <div class="select-avatar-container">
+                        <div class="select-avatar-container-action-box">
+                            <a class="select-avatar-button"><i><img class="dropdown-icon"  src="assets/001-arrow-down-sign-to-navigate.svg" width="10"></i></a>
+                            <div class="avatar-gender-submenu">
+                                <a class="avatar-gender-option">Female</a>
+                                <a class="avatar-gender-option">Male</a>
+                                <a class="avatar-gender-option">Other</a>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <h3 class="header-secondary">Welcome back {{name}}</h3>
+                <p class="sub-header">Insert your user information</p>
+            </div>        
+        </div>    
 
-            <input class="input" type="password" id="login-password" placeholder="Password">
-        </div>     
-      
-        <button class="btn-main" type="submit">login</button>
-    </form>
-    <p>or</p>
-    <a class="btn-text" id="signup-redirect">Signup</a>
+        <form id="login-form">
+            <div class="input-field">
+                <input class="input margin-bottom-small" type="email" id="login-email" placeholder="Email">
+
+                <input class="input margin-bottom-small" type="password" id="login-password" placeholder="Password">
+            </div>     
+        
+            <button class="btn-main margin-bottom-small margin-top-medium" type="submit">login</button>
+        </form>
+        <a class="btn-text margin-bottom-smalll" id="signup-redirect">Signup</a>
+    </div>
 </div>

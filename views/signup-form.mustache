@@ -1,13 +1,21 @@
 <div class="form-container">
+<div class="image-container">                   
+        <img src="assets/undraw_welcome_cats_thqn.svg" class="signup-form-image margin-bottom-small">
+                        
+    </div>
+    <div class="text-box margin-bottom-medium">
+        <h3 class="header-secondary">It's amazing to see you here!</h3>
+    </div>
     <form id="signup-form">
-        <input class="input" type="email" id="signup-email" placeholder="Insert your email">
+        <div class="input-field">
+            <input class="input margin-bottom-small" type="email" id="signup-email" placeholder="Insert your email">
+            <input class="input margin-bottom-small" type="password" id="signup-password" placeholder="Choose your password">
+        </div>
+       
         
-        <input class="input" type="password" id="signup-password" placeholder="Choose your password">
-        
-        <button class="btn-main" type="submit">Sign up</button>
+        <button class="btn-main margin-bottom-small  margin-top-large" type="submit">Sign up</button>
     </form>
-    <p>or</p>
-    <a class="btn-text" id="signin-redirect">Login</a>
+    <a class="btn-text margin-bottom-small" id="signin-redirect">Login</a>
 </div>
 
 <script src="signup.js"></script>

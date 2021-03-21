@@ -2,7 +2,51 @@ window.onload = () => {
     chrome.runtime.sendMessage({ command: "checkUser" }, (response) => {
         uiHandler(response.user);
     });
+    chrome.bookmarks.getTree(iterateTree);
 };
+
+let iterateTree = function(bookmarksTree){
+    console.log(bookmarksTree);
+    if(bookmarksTree[0].children){
+        let data = {};
+        let bookMarks = [];
+        for(child in bookmarksTree[0].children){            
+            bookMarks = logTree(bookmarksTree[0].children[child], bookMarks);
+            data["bookmarks"] = bookMarks;
+           
+        }
+        console.log(data);
+        fetch("./views/bookmarksSync.mustache")
+        .then(response=>response.text())
+        .then(template => {
+            var render = Mustache.render(template, {data:data});
+            console.log(render);
+        })
+}
+}
+
+function logTree(bookmarksItem, bookMarks){
+        // console.log("Logging bookmarks Item");
+        // console.log(bookmarksItem);
+        if(bookmarksItem.children){
+            // console.log("##########################################")
+            // console.log(bookmarksItem.title);
+            // console.log("################################################")
+            for(child of bookmarksItem.children){
+                bookMarks = logTree(child, bookMarks);
+            }
+        }if(bookmarksItem.url){
+            let bookmark = {};
+            // console.log(bookmarksItem.title)
+            // console.log(bookmarksItem.url)
+            bookmark["title"] = bookmarksItem.title;
+            bookmark["url"] = decodeURI(bookmarksItem.url);
+            bookMarks.push(bookmark);
+        }
+        return bookMarks;
+
+}
+
 
 function uiHandler(user) {
     if (user) {
@@ -29,32 +73,48 @@ function generateLoginUI(){
     fetch("./views/login-form.mustache")
     .then(response=>response.text())
     .then(template => {
-        var render = Mustache.render(template);
-        document.querySelector(".actions-container").innerHTML = render;
-        document.querySelector("#signup-redirect").addEventListener("click", () => {
-            generateSignUpUI()
-        });
+        //TODO: change user name
+        chrome.storage.local.get("user", (response) =>{
+            if(response.user.length > 0){
+                var render = Mustache.render(template, {name:response.user});
+            }
+            document.querySelector(".actions-container").innerHTML = render;
+            document.querySelector("#signup-redirect").addEventListener("click", () => {
+                generateSignUpUI()
+            });
 
-        const loginForm = document.querySelector("#login-form");
-        // Add event listener to login form
-        loginForm.addEventListener("submit", (e) => {
-            e.preventDefault();
-            const email = loginForm["login-email"].value;
-            const password = loginForm["login-password"].value;
+            let avatarSelectionButton = document.querySelector(".select-avatar-button");
+            let avatarSelectionSubMeny = document.querySelector(".avatar-gender-submenu");
+            let submenuIcon = document.querySelector(".dropdown-icon");
+            //Add event listener to gender submenu
+            avatarSelectionButton.addEventListener("click", e=>{
+                avatarSelectionSubMeny.classList.toggle("avatar-gender-submenu-active");
+                submenuIcon.classList.toggle("active-submenu");
+            })
 
-            //Login user
-            chrome.runtime.sendMessage(
-                {
-                    command: "LoginUser",
-                    data: { email: email, password: password },
-                },
-                (response) => {
-                    if (response.status == "failed") {
-                        displayError(response.message, 1);
+            
+            const loginForm = document.querySelector("#login-form");
+            // Add event listener to login form
+            loginForm.addEventListener("submit", (e) => {
+                e.preventDefault();
+                const email = loginForm["login-email"].value;
+                const password = loginForm["login-password"].value;
+
+                //Login user
+                chrome.runtime.sendMessage(
+                    {
+                        command: "LoginUser",
+                        data: { email: email, password: password },
+                    },
+                    (response) => {
+                        if (response.status == "failed") {
+                            displayError(response.message, 1);
+                        }
                     }
-                }
-            );
-        });
+                );
+            });
+        })
+        
     })
 }
 
@@ -108,7 +168,7 @@ function setLoggedInListeners() {
     const closeBookmarkButton = document.querySelector(
         "#close-bookmark-button"
     );
-    const syncButton = document.querySelector("#sync-btn");
+
 
     logoutButton.addEventListener("click", () => {
         chrome.runtime.sendMessage({ command: "SignOutUser" }, (response) => {
@@ -125,7 +185,6 @@ function setLoggedInListeners() {
         toggleBookmarkOverlay();
     });
 
-    syncButton.addEventListener("click", () => {});
 }
 
 
@@ -247,7 +306,7 @@ function setUpSearchBar(){
     const searchBar = document.createElement("input");
         searchBar.setAttribute("type","text");
         searchBar.setAttribute("placeholder", "search");
-        searchBar.classList.add("input");
+        searchBar.classList.add("searchbar");
         document.querySelector(".header-container").appendChild(searchBar)
         searchBar.addEventListener("input", ()=>{
             chrome.storage.local.get(["bookmarks"], (response) =>{
@@ -274,15 +333,17 @@ function toggleBookmarkOverlay(pageInfo) {
     const bookmarkOverlay = document.querySelector(
         ".bookmark-container-overlay"
     );
+    const mainContainer = document.querySelector(".loggedin-user-container");
     const bookmarkForm = document.querySelector("#details-form");
-
     let bookmarkOverlayDisplay = bookmarkOverlay.style.display;
-
+        
     if (bookmarkOverlayDisplay == "none") {
         let detailsInput = document.getElementsByClassName("page-detail");
         for (let i = 0; i <= 1; i++) {
             detailsInput[i].value = pageInfo[i];
         }
+
+        //TODO: set character counter
         bookmarkForm.addEventListener("submit", (e) => {
             e.preventDefault();
             bookmarkForm.title.classList.remove("input-error");
@@ -326,14 +387,16 @@ function toggleBookmarkOverlay(pageInfo) {
             );
         });
         bookmarkOverlay.style.display = "block";
+        mainContainer.style.display="none";
     } else {
         bookmarkOverlay.style.display = "none";
+        mainContainer.style.display="block";
     }
 }
 
 function popBookmarkOverlay() {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        let tabTitle = tabs[0].title;
+        let tabTitle = tabs[0].title.substring(0, 60);
         let tabUrl = tabs[0].url;
         let favIcon = tabs[0].favIconUrl;
         let pageInfo = [];

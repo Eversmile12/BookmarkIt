@@ -9,12 +9,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/4.1.0/mustache.min.js"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,200;0,700;1,400&family=Open+Sans:wght@300;400&display=swap" rel="stylesheet">
-    <script type="text/javascript" src="ui_handler.js"></script>
     <script type="text/javascript" src="popup.js"></script>
 </head>
 <body>
     <div class="main-container">
-        <div class="header-container">
+        <div class="header-container margin-bottom-medium">
             <h1 class="text-dark">Book Mark It!</h1>
             <p class="sub-header">Bookmarks manager made agile</p>
         </div>
@@ -22,8 +21,8 @@
         <div class="status-container" style="display: none;">
             
         </div>
-        <div class="actions-container">
-        </div>
+        <section class="actions-container">
+        </section>
 
     </div>
 
@@ -34,14 +33,14 @@
         </div>
         <form id="details-form">
             <div class="input-field">
-                <input class="input page-detail margin-bottom-small" type="text" name="title" id="details-title" placeholder="Title">
+                <input class="input page-detail margin-bottom-small" type="text" name="title" maxlength="60" id="details-title" placeholder="Title">
                 <input class="input page-detail margin-bottom-small" type="text"  name="url"  id="details-url" placeholder="Tags" >
                 <input class="input" type="text" id="details-tags"  name="tags"  placeholder="Insert a couple of tags" >
             </div>     
             <button class="btn-main btn-medium margin-top-medium" type="submit">Save<span><img class="save-icon" src="assets/icons/16x16.png" alt="save icon" width="16" height="16"></span></button>
         </form>
         <div class="close-icon-container">
-            <img src="assets/001-close.svg" width="20" height="20" id="close-bookmark-button" class="filter-white"></img>
+            <img src="assets/001-close.svg" width="20" height="20" id="close-bookmark-button" class="close-bookmark-icon filter-white"></img>
         </div>
     </div>
 

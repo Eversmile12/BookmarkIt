@@ -26,13 +26,13 @@ var firebaseConfig = {
     if(message.command == "SignUpUser"){
       firebase.auth().createUserWithEmailAndPassword(message.data.email, message.data.password)
       .then(credentials => {
-        console.log(credentials)
+        chrome.storage.local.set({user: credentials.user.email}, ()=>{
+        })
         callback({
           status : "success",
           message: "user registered"
         })
       }).catch(e => {
-        console.log("error: " + e)
         callback({
           status: "failed",
           message: e.message,
@@ -42,12 +42,15 @@ var firebaseConfig = {
     }else if(message.command == "LoginUser"){
       firebase.auth().signInWithEmailAndPassword(message.data.email, message.data.password)
       .then(credentials => {
-        callback({
+        chrome.storage.local.set({user: credentials.user.email}, ()=>{
+        })
+        
+        callback({ 
           status: "success",
-          message: "user logged in"
+          message: "user logged in",
         })
       }).catch(e => {
-        console.log(e.message);
+
         callback({
           status: "failed",
           message: "User not found"
@@ -78,10 +81,8 @@ chrome.runtime.onMessage.addListener((message, sender, callback) => {
 
 
 chrome.runtime.onMessage.addListener((message,sender,callback) =>{
-  console.log()
   if(message.command == "addBookmark"){
     let userId = firebase.auth().currentUser.uid
-    console.log(message.data.favIcon);
     firebase.firestore().collection("bookmarks").add(({
       bm_tags: message.data.tags,
       bm_title: message.data.title,
@@ -94,12 +95,11 @@ chrome.runtime.onMessage.addListener((message,sender,callback) =>{
       message: "bookmark added successfully"
     })
   }else if( message.command == "fetchUserBookmarks"){
-    chrome.storage.local.clear();
+    chrome.storage.local.remove("bookmarks");
     firebase.firestore().collection("bookmarks").where("bm_user_uid", "==", message.data.uid).get()
     .then((snapshot) => {
       let docs = []
       snapshot.docs.forEach(doc =>{
-        console.log(doc.data())
         let docData = {
           doc_data: doc.data(),
           doc_id: doc.id,
