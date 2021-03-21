@@ -348,6 +348,10 @@ html{
     color: #0F7EE4;
 }
 
+.margin-bottom-xsmall{
+    margin-bottom: .7rem;
+}
+
 .margin-bottom-small{
     margin-bottom: 1.3rem;
 }
