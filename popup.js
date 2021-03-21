@@ -6,45 +6,43 @@ window.onload = () => {
 };
 
 let iterateTree = function(bookmarksTree){
-    console.log(bookmarksTree);
+    console.log(bookmarksTree)
     if(bookmarksTree[0].children){
         let data = {};
         let bookMarks = [];
         for(child in bookmarksTree[0].children){            
             bookMarks = logTree(bookmarksTree[0].children[child], bookMarks);
             data["bookmarks"] = bookMarks;
-           
         }
-        console.log(data);
+        console.log(data.bookmarks);
         fetch("./views/bookmarksSync.mustache")
         .then(response=>response.text())
         .then(template => {
             var render = Mustache.render(template, {data:data});
-            console.log(render);
+            // document.querySelector("body").innerHTML = render;
         })
-}
+    }
 }
 
 function logTree(bookmarksItem, bookMarks){
-        // console.log("Logging bookmarks Item");
-        // console.log(bookmarksItem);
-        if(bookmarksItem.children){
-            // console.log("##########################################")
-            // console.log(bookmarksItem.title);
-            // console.log("################################################")
-            for(child of bookmarksItem.children){
-                bookMarks = logTree(child, bookMarks);
-            }
-        }if(bookmarksItem.url){
-            let bookmark = {};
-            // console.log(bookmarksItem.title)
-            // console.log(bookmarksItem.url)
-            bookmark["title"] = bookmarksItem.title;
-            bookmark["url"] = decodeURI(bookmarksItem.url);
-            bookMarks.push(bookmark);
+    // console.log("Logging bookmarks Item");
+    // console.log(bookmarksItem);
+    if(bookmarksItem.children){
+        // console.log("##########################################")
+        // console.log(bookmarksItem.title);
+        // console.log("################################################")
+        for(child of bookmarksItem.children){
+            bookMarks = logTree(child, bookMarks);
         }
-        return bookMarks;
-
+    }if(bookmarksItem.url){
+        let bookmark = {};
+        // console.log(bookmarksItem.title)
+        // console.log(bookmarksItem.url)
+        bookmark["title"] = bookmarksItem.title;
+        bookmark["url"] = decodeURI(bookmarksItem.url);
+        bookMarks.push(bookmark);
+    }
+    return bookMarks;
 }
 
 
@@ -74,9 +72,13 @@ function generateLoginUI(){
     .then(response=>response.text())
     .then(template => {
         //TODO: change user name
+        let username;
         chrome.storage.local.get("user", (response) =>{
             if(response.user.length > 0){
+                username = response.user;
                 var render = Mustache.render(template, {name:response.user});
+            }else{
+                username = "User";
             }
             document.querySelector(".actions-container").innerHTML = render;
             document.querySelector("#signup-redirect").addEventListener("click", () => {
