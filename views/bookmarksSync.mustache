@@ -2,9 +2,10 @@
 <div class="bookmark-tree">
     {{#data.bookmarks}}
         <div class="bookmark margin-bottom-xsmall">
-            <input id="toSync" type="checkbox">
+            <input class="toSync" data-url="{{url}}" data-title="{{title}}" type="checkbox">
             <a class="btn-text" href="{{url}}" target="blank">{{title}}</a>
         </div>
         
     {{/data.bookmarks}}
+    <button id="sync">sync</button>
 </div>

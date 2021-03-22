@@ -19,9 +19,43 @@ let iterateTree = function(bookmarksTree){
         .then(response=>response.text())
         .then(template => {
             var render = Mustache.render(template, {data:data});
-            // document.querySelector("body").innerHTML = render;
+            let button = document.createElement("button");
+            button.addEventListener("click", syncBookmarks)
+            button.innerText="Synch selected bookmarks";
+            document.querySelector("body").innerHTML = render;
+            document.querySelector("body").appendChild(button);
         })
     }
+}
+
+function syncBookmarks(){
+    let bookmarksToSync = [...document.querySelectorAll(".toSync")];
+    bookmarksToSync = bookmarksToSync.filter(bookmarksToSync => {
+        return bookmarksToSync.checked
+    })
+    let bookmarkData = [];
+    bookmarksToSync.forEach(bookmark => {
+        let bookmarkObj = {
+            title: bookmark.dataset.title,
+            url: bookmark.dataset.url
+        }
+        bookmarkData.push(bookmarkObj)
+    })
+    console.log(bookmarkData);
+    if(bookmarksToSync.length > 0){
+        chrome.runtime.sendMessage(
+            {
+                command: "synchUserBookmarks",
+                data: {
+                    bookmarksData : bookmarkData
+                },
+            },
+            (response) => {
+                console.log(response);
+                window.location.reload();
+            }
+        );
+    };
 }
 
 function logTree(bookmarksItem, bookMarks){
@@ -246,7 +280,7 @@ async function generateBookmarkListItem(bookmarks){
         bookmarkCopyLink.setAttribute("width", "15");
         bookmarkCopyLink.setAttribute("height", "15");
         bookmarkCopyLink.setAttribute("src", "./assets/001-copy.png");
-        bookmarkCopyLink.classList.add("bookmark-copy-icon")
+        bookmarkCopyLink.classList.add("bookmark-copy-icon", "icon")
         bookmarkCopyLink.setAttribute("data-url", bookmark.doc_data.bm_url)
         bookmarkCopyLink.addEventListener("click", (e) =>{
             const str = e.target.dataset.url;
@@ -262,13 +296,13 @@ async function generateBookmarkListItem(bookmarks){
         const bookmarkLink = document.createElement("A");
         bookmarkLink.setAttribute("href", bookmark.doc_data.bm_url)
         bookmarkLink.setAttribute("target", "_blank")
-        bookmarkLink.classList.add("bookmark-link")
+        bookmarkLink.classList.add("bookmark-link", "icon")
 
         const linkIcon = document.createElement("img");
         linkIcon.setAttribute("width", "15");
         linkIcon.setAttribute("height", "15");
         linkIcon.setAttribute("src", "./assets/001-external-link-symbol.png");
-        linkIcon.classList.add("bookmark-delete-icon")
+        linkIcon.classList.add("icon")
 
         bookmarkLink.appendChild(linkIcon)
 
@@ -277,7 +311,7 @@ async function generateBookmarkListItem(bookmarks){
         bookmarkDelete.setAttribute("width", "15");
         bookmarkDelete.setAttribute("height", "15");
         bookmarkDelete.setAttribute("src", "./assets/001-delete.png");
-        bookmarkDelete.classList.add("bookmark-delete-icon")
+        bookmarkDelete.classList.add("bookmark-delete-icon", "icon")
         
         bookmarkDelete.addEventListener("click", (e)=>{
             chrome.runtime.sendMessage({command: "deleteBookmark", data:{docId: e.target.getAttribute("data-id")}}, response =>{

@@ -219,15 +219,30 @@ html{
 .bookmark-link{
     position: absolute;
     top:50%;
-    right: 12%;
+    right: 14%;
     transform: translate(-50%, -50%);
 }
 
 .bookmark-copy-icon{
-    position: absolute;
     top:50%;
-    right: 7%;
+    right: 6.5%;
+}
+
+.bookmark-delete-icon{
+    top:50%;
+    right: 2%;    
+}
+
+
+.icon{
+    position: absolute;
     transform: translate(-50%, -50%);
+    cursor: pointer;
+    opacity: 1;
+}
+
+.icon:hover{
+    opacity: .9;
 }
 
 .bookmark-icon{

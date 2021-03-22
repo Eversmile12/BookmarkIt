@@ -82,7 +82,7 @@ chrome.runtime.onMessage.addListener((message, sender, callback) => {
 
 chrome.runtime.onMessage.addListener((message,sender,callback) =>{
   if(message.command == "addBookmark"){
-    let userId = firebase.auth().currentUser.uid
+    let userId = getUID();
     firebase.firestore().collection("bookmarks").add(({
       bm_tags: message.data.tags,
       bm_title: message.data.title,
@@ -123,4 +123,27 @@ chrome.runtime.onMessage.addListener((message,sender,callback) =>{
   return true;
 })
 
-    
+
+chrome.runtime.onMessage.addListener((message,sender,callback) =>{
+  if(message.command == "synchUserBookmarks"){
+    let userId = getUID();
+    const bookmarksRef = firebase.firestore().collection("bookmarks");
+    console.log(message.data.bookmarksData)
+    message.data.bookmarksData.forEach(bookmark => {
+      console.log(bookmark.title)
+      bookmarksRef.add({
+        bm_tags: "",
+        bm_title: bookmark.title,
+        bm_url: bookmark.url.replaceAll("\"",""),
+        bm_icon: "",
+        bm_user_uid: userId
+      })
+    })
+  }
+})
+  
+
+function getUID(){
+  let uid = firebase.auth().currentUser.uid
+  return uid;
+}
