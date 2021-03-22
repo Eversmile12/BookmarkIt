@@ -27,21 +27,23 @@
     </div>
 
     <div class="bookmark-container-overlay" style='display:none'>
-        <div class="margin-bottom-medium">
-            <h1 class="text-light">Details!</h1>
-            <p class="sub-header text-light">We still need a way to retrieve you bookmarks</p>
-        </div>
-        <form id="details-form">
-            <div class="input-field">
-                <input class="input page-detail margin-bottom-small" type="text" name="title" maxlength="60" id="details-title" placeholder="Title">
-                <input class="input page-detail margin-bottom-small" type="text"  name="url"  id="details-url" placeholder="Tags" >
-                <input class="input" type="text" id="details-tags"  name="tags"  placeholder="Insert a couple of tags" >
-            </div>     
-            <button class="btn-main btn-medium margin-top-medium" type="submit">Save<span><img class="save-icon" src="assets/icons/16x16.png" alt="save icon" width="16" height="16"></span></button>
-        </form>
-        <div class="close-icon-container">
-            <img src="assets/001-close.svg" width="20" height="20" id="close-bookmark-button" class="close-bookmark-icon filter-white"></img>
-        </div>
+        <div class="bookmark-container-content-box">
+            <div class="margin-bottom-medium">
+                <h1 class="text-light">Details!</h1>
+                <p class="sub-header text-light">We still need a way to retrieve you bookmarks</p>
+            </div>
+            <form id="details-form">
+                <div class="input-field">
+                    <input class="input input-details page-detail margin-bottom-small" type="text" name="title" maxlength="60" id="details-title" placeholder="Title">
+                    <input class="input input-details page-detail margin-bottom-small" type="text"  name="url"  id="details-url" placeholder="Tags" >
+                    <input class="input input-details" type="text" id="details-tags"  name="tags"  placeholder="Insert a couple of tags" >
+                </div>     
+                <button class="btn-main btn-yellow btn-medium margin-top-medium" type="submit">Save</button>
+            </form>
+            <div class="close-icon-container">
+                <img src="assets/001-close.svg" width="20" height="20" id="close-bookmark-button" class="close-bookmark-icon filter-white"></img>
+            </div>
+        </div>      
     </div>
 
     <footer class="footer-main">

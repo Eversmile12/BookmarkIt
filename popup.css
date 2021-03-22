@@ -153,11 +153,41 @@ html{
     position: absolute;
     width: 100%;
     height: 100%;
-    top: 0;
+    top: 0%;
     left: 0;
     padding: 8rem 0;
     text-align: center;
     background-color:  rgba(80, 90, 107, .97);
+    transition: all .8s;
+}
+
+.bookmark-container-overlay.open{
+    transform: translateY(0);
+}
+
+.bookmark-container-overlay.close{
+    transform: translateY(-100%);
+}
+
+@keyframes dragDown{
+    0%{
+        transform: translateY(-100%);
+    }
+    100%{
+        transform: translateY(0);
+        display: block;
+    }
+}
+
+
+@keyframes dragUp{
+    0%{
+        transform: translateY(0);
+    }
+    100%{
+        transform: translateY(-100%);
+        display: none;
+    }
 }
 
 .bookmark-list{
@@ -250,8 +280,6 @@ html{
     padding: 1rem 2.5rem;
     position: relative;
     font-size: 1.5rem;
-    background-color: #194aec;
-    color: #f7f7f7;
     
     border: none;
     border-radius: 100px;
@@ -259,7 +287,7 @@ html{
 
     font-weight: 600;
     transition: all .4s;
-    z-index: 2;
+    z-index: 0;
 }
 
 .btn-main:active, .btn-main:focus{
@@ -278,7 +306,6 @@ html{
     width: 100%;
     border-radius: 10rem;
     position: absolute;
-    background-color: #194aec;
     top: 0;
     left: 0;
     z-index: -1;
@@ -290,6 +317,23 @@ html{
     opacity: 0;
 }
 
+.btn-blue{ 
+    background-color: #194aec;
+    color: #f7f7f7;
+}
+
+.btn-blue::after{
+    background-color: #194aec;
+}
+
+.btn-yellow{
+    background-color: rgb(244, 181, 4);
+    color: #f7f7f7;
+}
+
+.btn-yellow::after{
+    background-color: rgb(244, 181, 4);
+}
 
 .btn-medium{
     width: 30%;
@@ -308,24 +352,36 @@ html{
 
 .input{
     display: block;
-    padding: .5rem 0;
+    padding: .5rem .5rem;
     width: 50%;
     border: none;
     border-bottom: 1px solid rgba(58, 58, 58, 0.3);
     outline: none;
     margin: .5rem auto;
-    background-color: #fafafa;
-
-    
+    background-color: transparent;    
     color: rgba(58, 58, 58, 0.8);
-    
 }
+
 .input:focus, .searchbar:focus{
     outline: none;
 }
 
 .input-error{
     border: 1px solid red;
+}
+
+.input-details{
+    padding: .8rem;
+    background-color: #f7f7f7;
+    opacity: .98;
+    border-radius: 3px;
+    box-shadow: 0 .2rem 1rem rgba(97, 97, 97, .2);
+    transition: all .2s;
+}
+
+.input-details:hover{
+    transform: translateY(-1px);
+    box-shadow: 0 .4rem 2rem rgba(97, 97, 97, .4);
 }
 
 .searchbar{

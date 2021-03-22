@@ -389,10 +389,13 @@ function toggleBookmarkOverlay(pageInfo) {
             );
         });
         bookmarkOverlay.style.display = "block";
-        mainContainer.style.display="none";
+        bookmarkOverlay.style.animation = "dragDown 1s forwards";
     } else {
-        bookmarkOverlay.style.display = "none";
-        mainContainer.style.display="block";
+        bookmarkOverlay.style.animation = "dragUp 1s forwards";
+
+        setTimeout(() => {
+            bookmarkOverlay.style.display = "none"; }, 1000)
+        
     }
 }
 
