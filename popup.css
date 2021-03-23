@@ -17,6 +17,15 @@ html{
     font-size: 62.5%;
 
 }
+
+input[type="checkbox"]{
+    height: 1.5rem;
+    width: 1.5rem;
+}
+
+input[type="checkbox"]:checked{
+    background-color: #222222;
+}
 .main-container{
     width: 50rem;
     height: 45rem;
@@ -63,8 +72,6 @@ html{
     height: 14rem;
 }
 
-.profile-image{
-}
 .username {
     display: inline-block;
 }
@@ -169,25 +176,55 @@ html{
     transform: translateY(-100%);
 }
 
-@keyframes dragDown{
-    0%{
-        transform: translateY(-100%);
-    }
-    100%{
-        transform: translateY(0);
-        display: block;
-    }
+.bookmark-sync-overlay{
+    position: absolute;
+    top: 0;
+}
+
+.bookmark-tree-container{
+    height: 45rem;
+    width: 50rem;
+    background-color:#f7f7f7 ;
+}
+
+.bookmark-tree-header{
+    text-align: center;
+    padding-top: 2rem;
+}
+
+.bookmark-tree-toolbox{
+    background-color: rgba(80, 90, 107, .9);
+    padding: .7rem 6rem;
+}
+
+.bookmark-tree-list-container{
+    background-color: white;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: 80%;
+}
+
+.bookmark-tree-list{
+    padding: 2rem 4rem;
 }
 
 
-@keyframes dragUp{
-    0%{
-        transform: translateY(0);
-    }
-    100%{
-        transform: translateY(-100%);
-        display: none;
-    }
+
+.bookmark-tree-item:not(:last-child){
+    margin-bottom: 1rem;
+}
+
+.bookmark-tree-link{
+    font-size: 1.3rem;
+    color: #333333;
+    text-decoration: none;
+}
+
+.bookmark-tree-link:hover{
+    color: #194aec;
+}
+.toSync {
+    margin-right: .5rem;
 }
 
 .bookmark-list{
@@ -275,6 +312,12 @@ html{
     line-height: 1.6;
 }
 
+.header-primary{
+    font-family: 'Montserrat', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: rgb(244, 181, 4);
+}
 
 .header-secondary{
     font-family: 'Montserrat', sans-serif;
@@ -285,6 +328,7 @@ html{
 
 .sub-header{
     letter-spacing: .1rem;
+    margin-bottom: .5rem;
 }
 
 
@@ -331,6 +375,20 @@ html{
     transform: scaleX(1.4) scaleY(1.6);
     opacity: 0;
 }
+
+.btn-secondary{
+    padding: .3rem .5rem;
+    border: none;
+    font-weight: 600;
+    border-radius: 3px;
+    margin: 0 2rem;
+    cursor: pointer;
+}
+
+.btn-secondary:hover{
+    background-color:rgb(236, 174, 3) ;
+}
+
 
 .btn-blue{ 
     background-color: #194aec;
@@ -441,8 +499,8 @@ html{
 .close-icon-container{
     position: absolute;
     cursor: pointer;
-    top: 10%;
-    right: 5%;
+    top: 3%;
+    right: 3%;
     transition: all .2s;
 }
 .close-bookmark-icon {
@@ -461,4 +519,26 @@ html{
 
 .filter-white{
     filter: invert(98%) sepia(2%) saturate(306%) hue-rotate(221deg) brightness(116%) contrast(94%)
+}
+
+
+@keyframes dragDown{
+    0%{
+        transform: translateY(-100%);
+    }
+    100%{
+        transform: translateY(0);
+        display: block;
+    }
+}
+
+
+@keyframes dragUp{
+    0%{
+        transform: translateY(0);
+    }
+    100%{
+        transform: translateY(-110%);
+        display: none;
+    }
 }

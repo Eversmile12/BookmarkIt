@@ -139,7 +139,9 @@ chrome.runtime.onMessage.addListener((message,sender,callback) =>{
         bm_user_uid: userId
       })
     })
+    callback();
   }
+  return true;
 })
   
 

@@ -2,82 +2,9 @@ window.onload = () => {
     chrome.runtime.sendMessage({ command: "checkUser" }, (response) => {
         uiHandler(response.user);
     });
-    chrome.bookmarks.getTree(iterateTree);
+    
 };
 
-let iterateTree = function(bookmarksTree){
-    console.log(bookmarksTree)
-    if(bookmarksTree[0].children){
-        let data = {};
-        let bookMarks = [];
-        for(child in bookmarksTree[0].children){            
-            bookMarks = logTree(bookmarksTree[0].children[child], bookMarks);
-            data["bookmarks"] = bookMarks;
-        }
-        console.log(data.bookmarks);
-        fetch("./views/bookmarksSync.mustache")
-        .then(response=>response.text())
-        .then(template => {
-            var render = Mustache.render(template, {data:data});
-            let button = document.createElement("button");
-            button.addEventListener("click", syncBookmarks)
-            button.innerText="Synch selected bookmarks";
-            document.querySelector("body").innerHTML = render;
-            document.querySelector("body").appendChild(button);
-        })
-    }
-}
-
-function syncBookmarks(){
-    let bookmarksToSync = [...document.querySelectorAll(".toSync")];
-    bookmarksToSync = bookmarksToSync.filter(bookmarksToSync => {
-        return bookmarksToSync.checked
-    })
-    let bookmarkData = [];
-    bookmarksToSync.forEach(bookmark => {
-        let bookmarkObj = {
-            title: bookmark.dataset.title,
-            url: bookmark.dataset.url
-        }
-        bookmarkData.push(bookmarkObj)
-    })
-    console.log(bookmarkData);
-    if(bookmarksToSync.length > 0){
-        chrome.runtime.sendMessage(
-            {
-                command: "synchUserBookmarks",
-                data: {
-                    bookmarksData : bookmarkData
-                },
-            },
-            (response) => {
-                console.log(response);
-                window.location.reload();
-            }
-        );
-    };
-}
-
-function logTree(bookmarksItem, bookMarks){
-    // console.log("Logging bookmarks Item");
-    // console.log(bookmarksItem);
-    if(bookmarksItem.children){
-        // console.log("##########################################")
-        // console.log(bookmarksItem.title);
-        // console.log("################################################")
-        for(child of bookmarksItem.children){
-            bookMarks = logTree(child, bookMarks);
-        }
-    }if(bookmarksItem.url){
-        let bookmark = {};
-        // console.log(bookmarksItem.title)
-        // console.log(bookmarksItem.url)
-        bookmark["title"] = bookmarksItem.title;
-        bookmark["url"] = decodeURI(bookmarksItem.url);
-        bookMarks.push(bookmark);
-    }
-    return bookMarks;
-}
 
 
 function uiHandler(user) {
@@ -120,11 +47,11 @@ function generateLoginUI(){
             });
 
             let avatarSelectionButton = document.querySelector(".select-avatar-button");
-            let avatarSelectionSubMeny = document.querySelector(".avatar-gender-submenu");
+            let avatarSelectionSubMenu = document.querySelector(".avatar-gender-submenu");
             let submenuIcon = document.querySelector(".dropdown-icon");
             //Add event listener to gender submenu
             avatarSelectionButton.addEventListener("click", e=>{
-                avatarSelectionSubMeny.classList.toggle("avatar-gender-submenu-active");
+                avatarSelectionSubMenu.classList.toggle("avatar-gender-submenu-active");
                 submenuIcon.classList.toggle("active-submenu");
             })
 
@@ -204,6 +131,7 @@ function setLoggedInListeners() {
     const closeBookmarkButton = document.querySelector(
         "#close-bookmark-button"
     );
+    const syncBookmarksButton = document.querySelector("#sync-btn");
 
 
     logoutButton.addEventListener("click", () => {
@@ -220,6 +148,10 @@ function setLoggedInListeners() {
     closeBookmarkButton.addEventListener("click", () => {
         toggleBookmarkOverlay();
     });
+
+    syncBookmarksButton.addEventListener("click", () => {
+        chrome.bookmarks.getTree(popBookmarkSyncOverlay);
+    })
 
 }
 
@@ -435,7 +367,7 @@ function toggleBookmarkOverlay(pageInfo) {
 
 function popBookmarkOverlay() {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        let tabTitle = tabs[0].title.substring(0, 60);
+        let tabTitle = tabs[0].title.substring(0, 40);
         let tabUrl = tabs[0].url;
         let favIcon = tabs[0].favIconUrl;
         let pageInfo = [];
@@ -470,4 +402,126 @@ function displayError(error, type, color) {
     }
     errorMessage.innerText += error;
     form.parentNode.insertBefore(errorMessage, form.nextSibling);
+}
+
+
+let popBookmarkSyncOverlay = function(bookmarksTree){
+    if(bookmarksTree[0].children){
+        let data = {};
+        let bookMarks = [];
+        for(child in bookmarksTree[0].children){            
+            bookMarks = logTree(bookmarksTree[0].children[child], bookMarks);
+        }
+        chrome.storage.local.get(["bookmarks"], (response) => {
+            console.log(response.bookmarks);
+            data["bookmarks"] = bookMarks.filter(bookmark => {
+                let isContainer = false;
+                response.bookmarks.forEach(savedBookmark => {               
+                    if(savedBookmark.doc_data.bm_url == bookmark.url){
+                        console.log(savedBookmark.doc_data.bm_url);
+                        console.log(bookmark.url)     
+                        isContainer = true;
+                    }
+                })
+                return !isContainer;
+            })
+            console.log(data.bookmarks);
+            fetch("./views/bookmarksSync.mustache")
+            .then(response=>response.text())
+            .then(template => {
+                var render = Mustache.render(template, {data:data});
+                const container = document.createElement("div");
+                container.classList.add("bookmark-sync-overlay")
+                container.innerHTML = render;
+    
+                document.querySelector("body").appendChild(container);
+                document.querySelector(".bookmark-sync-overlay").style.animation = "dragDown 1s forwards";
+                let bookmarksToSync = [...document.querySelectorAll(".toSync")]
+                document.querySelector("#sync-action-btn").addEventListener("click", syncBookmarks)
+                document.querySelector("#close-bookmark-sync-btn").addEventListener("click", closeBookmarkSyncOverlay);
+                document.querySelector("#select-all-btn").addEventListener("click", selectAllBookmarkTree);
+            })      
+        })
+       
+    }
+}
+
+function selectAllBookmarkTree(){
+    let bookmarksToSync = [...document.querySelectorAll(".toSync")]
+    if(document.querySelector("#select-all-btn").checked == true){
+        bookmarksToSync.forEach(bookmarkCheckBox => {
+            bookmarkCheckBox.checked = true;
+        })  
+    }else{
+        bookmarksToSync.forEach(bookmarkCheckBox => {
+            bookmarkCheckBox.checked = false;
+        })  
+    }
+    
+}
+
+function closeBookmarkSyncOverlay(){
+    console.log("yo");
+    let bookmarkSyncOverlay = document.querySelector(".bookmark-sync-overlay");
+    bookmarkSyncOverlay.style.animation = "dragUp 1s forwards";
+    setTimeout (()=>{
+        document.querySelector("body").removeChild(bookmarkSyncOverlay);
+    },1000)
+    
+}
+
+function syncBookmarks(){
+    let bookmarksToSync = [...document.querySelectorAll(".toSync")];
+    bookmarksToSync = bookmarksToSync.filter(bookmarksToSync => {
+        return bookmarksToSync.checked
+    })
+    let bookmarkData = [];
+    bookmarksToSync.forEach(bookmark => {
+        let bookmarkObj = {
+            title: bookmark.dataset.title,
+            url: bookmark.dataset.url
+        }
+        bookmarkData.push(bookmarkObj)
+    })
+    // console.log(bookmarkData);
+    if(bookmarksToSync.length > 0){
+        chrome.runtime.sendMessage(
+            {
+                command: "synchUserBookmarks",
+                data: {
+                    bookmarksData : bookmarkData
+                },
+            },
+            (response) => {
+                console.log(response);
+                let bookmarkSyncOverlay = document.querySelector(".bookmark-sync-overlay");
+                bookmarkSyncOverlay.style.animation = "dragUp 1s forwards";
+                setTimeout (()=>{
+                    document.querySelector("body").removeChild(bookmarkSyncOverlay);
+                    window.location.reload();
+                },1000)
+            }
+        );
+    };
+}
+
+function logTree(bookmarksItem, bookMarks){
+    // console.log("Logging bookmarks Item");
+    // console.log(bookmarksItem);
+    if(bookmarksItem.children){
+        // console.log("##########################################")
+        // console.log(bookmarksItem.title);
+        // console.log("################################################")
+        for(child of bookmarksItem.children){
+            bookMarks = logTree(child, bookMarks);
+        }
+    }if(bookmarksItem.url){
+        let bookmark = {};
+        // console.log(bookmarksItem.title)
+        // console.log(bookmarksItem.url)
+        bookmark["title"] = bookmarksItem.title;
+        bookmark["url"] = decodeURI(bookmarksItem.url);
+        bookMarks.push(bookmark);
+    }
+    return bookMarks;
 }

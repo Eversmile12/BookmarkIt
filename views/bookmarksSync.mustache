@@ -1,11 +1,28 @@
 
-<div class="bookmark-tree">
-    {{#data.bookmarks}}
-        <div class="bookmark margin-bottom-xsmall">
-            <input class="toSync" data-url="{{url}}" data-title="{{title}}" type="checkbox">
-            <a class="btn-text" href="{{url}}" target="blank">{{title}}</a>
-        </div>
-        
-    {{/data.bookmarks}}
-    <button id="sync">sync</button>
+<div class="bookmark-tree-container">
+    <div class="bookmark-tree-header margin-bottom-small">
+        <h1 class="header-primary">Import Bookmarks</h1>
+        <p class="sub-header">Select the bookmarks you want to import</p>
+    </div>
+    <div class="bookmark-tree-toolbox ">
+        <label for="select-all-toggleBox" class="text-light">Select all</label>        
+        <input type="checkbox" id="select-all-btn" name="select-all-toggleBox">      
+        <button id="sync-action-btn" class="btn-secondary btn-yellow">Sync Bookmarks</button>
+    </div>
+    <div class="bookmark-tree-list-container">
+        <div class="bookmark-tree-list">
+            <ul  style="list-style:none">
+                {{#data.bookmarks}}
+                    <li class="bookmark-tree-item">
+                        <input class="toSync" data-url="{{url}}" data-title="{{title}}" type="checkbox">
+                        <a class="bookmark-tree-link" href="{{url}}" target="blank">{{title}}</a>
+                    </li>
+
+                {{/data.bookmarks}}
+            </ul>
+        </div>  
+    </div>
+    <div class="close-icon-container">
+        <img src="assets/001-close.svg" width="20" height="20" id="close-bookmark-sync-btn" class="close-bookmark-icon">
+    </div>
 </div>
