@@ -42,6 +42,7 @@ function generateLoginUI(){
                 username = "User";
             }
             document.querySelector(".actions-container").innerHTML = render;
+            renderAvatar();
             document.querySelector("#signup-redirect").addEventListener("click", () => {
                 generateSignUpUI()
             });
@@ -54,7 +55,15 @@ function generateLoginUI(){
                 avatarSelectionSubMenu.classList.toggle("avatar-gender-submenu-active");
                 submenuIcon.classList.toggle("active-submenu");
             })
-
+            const avatarGenderOption = [...document.querySelectorAll(".avatar-gender-option")];
+            avatarGenderOption.forEach(genderOption => {
+                genderOption.addEventListener("click", (e) => {
+                    console.log()
+                    chrome.storage.local.set({userGender: e.target.innerText}, ()=>{
+                        renderAvatar();
+                    })
+            })
+            })
             
             const loginForm = document.querySelector("#login-form");
             // Add event listener to login form
@@ -208,13 +217,47 @@ async function generateBookmarkListItem(bookmarks){
         bookmarkTitle.innerText = bookmark.doc_data.bm_title;
         bookmarkTitle.classList.add("bookmark-title");
         
-        const bookmarkCopyLink = document.createElement("img");
-        bookmarkCopyLink.setAttribute("width", "15");
-        bookmarkCopyLink.setAttribute("height", "15");
-        bookmarkCopyLink.setAttribute("src", "./assets/001-copy.png");
-        bookmarkCopyLink.classList.add("bookmark-copy-icon", "icon")
-        bookmarkCopyLink.setAttribute("data-url", bookmark.doc_data.bm_url)
-        bookmarkCopyLink.addEventListener("click", (e) =>{
+        
+
+
+        const bookmarkOptionsContainer = document.createElement("div");
+        bookmarkOptionsContainer.classList.add("bookmark-options-container")
+
+        const bookmarkOptionsIcon = document.createElement("img")
+        bookmarkOptionsIcon.setAttribute("width", "15");
+        bookmarkOptionsIcon.setAttribute("height", "15");
+        bookmarkOptionsIcon.setAttribute("src", "./assets/menu.png");
+        bookmarkOptionsIcon.classList.add("bookmark-menu-icon")
+
+     
+
+        const bookmarkOptionsSubmenu = document.createElement("div")
+        bookmarkOptionsSubmenu.classList.add("bookmarks-options-submenu")
+        bookmarkOptionsIcon.addEventListener("click", () => {
+            bookmarkOptionsSubmenu.classList.toggle("active")
+            bookmarkOptionsIcon.classList.toggle("bookmark-menu-icon-active")
+        })
+
+        const bookmarkLinkIcon = document.createElement("A");
+        bookmarkLinkIcon.setAttribute("href", bookmark.doc_data.bm_url)
+        bookmarkLinkIcon.setAttribute("target", "_blank")
+        bookmarkLinkIcon.classList.add("icon")
+
+        const linkIcon = document.createElement("img");
+        linkIcon.setAttribute("width", "15");
+        linkIcon.setAttribute("height", "15");
+        linkIcon.setAttribute("src", "./assets/001-external-link-symbol.png");
+        linkIcon.classList.add("icon", "margin-bottom-xsmall")
+        bookmarkLinkIcon.appendChild(linkIcon)
+
+        const bookmarkCopyLinkIcon = document.createElement("img");
+        bookmarkCopyLinkIcon.setAttribute("width", "15");
+        bookmarkCopyLinkIcon.setAttribute("height", "15");
+        bookmarkCopyLinkIcon.setAttribute("src", "./assets/001-copy.png");
+        bookmarkCopyLinkIcon.classList.add("icon", "margin-bottom-xsmall")
+
+        bookmarkCopyLinkIcon.setAttribute("data-url", bookmark.doc_data.bm_url)
+        bookmarkCopyLinkIcon.addEventListener("click", (e) =>{
             const str = e.target.dataset.url;
             const el = document.createElement('textarea');
             el.value = str;
@@ -225,38 +268,30 @@ async function generateBookmarkListItem(bookmarks){
             alert("Link copied to the clipboard ")
         })
 
-        const bookmarkLink = document.createElement("A");
-        bookmarkLink.setAttribute("href", bookmark.doc_data.bm_url)
-        bookmarkLink.setAttribute("target", "_blank")
-        bookmarkLink.classList.add("bookmark-link", "icon")
-
-        const linkIcon = document.createElement("img");
-        linkIcon.setAttribute("width", "15");
-        linkIcon.setAttribute("height", "15");
-        linkIcon.setAttribute("src", "./assets/001-external-link-symbol.png");
-        linkIcon.classList.add("icon")
-
-        bookmarkLink.appendChild(linkIcon)
-
-        const bookmarkDelete = document.createElement("img");
-        bookmarkDelete.setAttribute("data-id", bookmark.doc_id)
-        bookmarkDelete.setAttribute("width", "15");
-        bookmarkDelete.setAttribute("height", "15");
-        bookmarkDelete.setAttribute("src", "./assets/001-delete.png");
-        bookmarkDelete.classList.add("bookmark-delete-icon", "icon")
+        const bookmarkDeleteIcon = document.createElement("img");
+        bookmarkDeleteIcon.setAttribute("data-id", bookmark.doc_id)
+        bookmarkDeleteIcon.setAttribute("width", "15");
+        bookmarkDeleteIcon.setAttribute("height", "15");
+        bookmarkDeleteIcon.setAttribute("src", "./assets/001-delete.png");
+        bookmarkDeleteIcon.classList.add("icon")
         
-        bookmarkDelete.addEventListener("click", (e)=>{
+        bookmarkDeleteIcon.addEventListener("click", (e)=>{
             chrome.runtime.sendMessage({command: "deleteBookmark", data:{docId: e.target.getAttribute("data-id")}}, response =>{
                 window.location.reload()
             })
         })
 
+       
+        
+        bookmarkOptionsSubmenu.appendChild(bookmarkLinkIcon);
+        bookmarkOptionsSubmenu.appendChild(bookmarkCopyLinkIcon)
+        bookmarkOptionsSubmenu.appendChild(bookmarkDeleteIcon);
+        bookmarkOptionsContainer.appendChild(bookmarkOptionsIcon)
+        bookmarkOptionsContainer.appendChild(bookmarkOptionsSubmenu)
+
+        bookmarkItem.appendChild(bookmarkOptionsContainer)
         bookmarkItem.appendChild(bookmarkIcon);
         bookmarkItem.appendChild(bookmarkTitle);
-        bookmarkItem.appendChild(bookmarkTitle);
-        bookmarkItem.appendChild(bookmarkLink);
-        bookmarkItem.appendChild(bookmarkCopyLink)
-        bookmarkItem.appendChild(bookmarkDelete);
         
         bookmarksList.appendChild(bookmarkItem);
         
@@ -524,4 +559,27 @@ function logTree(bookmarksItem, bookMarks){
         bookMarks.push(bookmark);
     }
     return bookMarks;
+}
+
+
+function renderAvatar(){
+    chrome.storage.local.get(["userGender"], response => {
+        let profileImage = document.querySelector(".login-form-image");
+        let image;
+            switch(response.userGender){
+                case "Male":
+                    image = "assets/male_profile_image.svg"
+                    break;
+                case "Female":
+                    image = "assets/female_profile_image.svg"
+                    break;
+                case "Other":
+                    image = "assets/unicorn_profile_image.svg"
+                    break;
+                default:
+                    image ="assets/male_profile_image.svg"
+                    break;
+            }
+            profileImage.setAttribute("src", image);
+    })
 }

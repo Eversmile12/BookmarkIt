@@ -253,7 +253,7 @@ input[type="checkbox"]:checked{
     font-size: 1.3rem;
 }
 
-.bookmark-link{
+/* .bookmark-link{
     position: absolute;
     top:50%;
     right: 14%;
@@ -270,17 +270,53 @@ input[type="checkbox"]:checked{
     right: 2%;    
 }
 
+*/
 
-.icon{
+.bookmark-options-container{
     position: absolute;
-    transform: translate(-50%, -50%);
-    cursor: pointer;
+    right: 5%;
+  
+}
+
+.bookmark-menu-icon{
+    transition: all .2s;
+    opacity: .6;
+}
+
+.bookmark-menu-icon-active{
+    transform: rotate(-90deg);
     opacity: 1;
 }
 
-.icon:hover{
-    opacity: .9;
+
+.icon{
+    cursor: pointer;
+    opacity: 1;
+    transition: all .1s;
 }
+
+.icon:hover{
+    opacity: .8;
+    transform: translateY(-1px);
+}
+
+
+
+.bookmarks-options-submenu{
+    display: none;
+    z-index: 99999;
+    background-color: #f7f7f7;
+    width: 4rem;
+    padding: 1rem;
+    position: absolute;
+    right: 0;
+    transform: translate(30%, 5%);
+}
+
+.bookmarks-options-submenu.active{
+    display: block;
+}
+
 
 .bookmark-icon{
     position: absolute;
@@ -289,12 +325,6 @@ input[type="checkbox"]:checked{
     transform: translate(-50%, -50%);
 }
 
-.bookmark-delete-icon{
-    position: absolute;
-    top:50%;
-    right: 2%;
-    transform: translate(-50%, -50%);
-}
 
 
  .text-dark{
