@@ -35,7 +35,7 @@ function generateLoginUI(){
         //TODO: change user name
         let username;
         chrome.storage.local.get("user", (response) =>{
-            if(response.user.length > 0){
+            if(response.user){
                 username = response.user;
                 var render = Mustache.render(template, {name:response.user});
             }else{
