@@ -14,7 +14,6 @@
 
     "permissions": [
         "activeTab",
-        "<all_urls>",
         "tabs",
         "storage",
         "bookmarks"
