@@ -2,7 +2,7 @@ window.onload = () => {
     chrome.runtime.sendMessage({ command: "checkUser" }, (response) => {
         uiHandler(response.user);
     });
-    
+
 };
 
 
@@ -36,6 +36,7 @@ function generateLoginUI(){
         let username;
         chrome.storage.local.get("user", (response) =>{
             if(response.user){
+                console.log(response.user)
                 username = response.user;
             }else{
                 username = "User";
@@ -58,7 +59,6 @@ function generateLoginUI(){
             const avatarGenderOption = [...document.querySelectorAll(".avatar-gender-option")];
             avatarGenderOption.forEach(genderOption => {
                 genderOption.addEventListener("click", (e) => {
-                    console.log()
                     chrome.storage.local.set({userGender: e.target.innerText}, ()=>{
                         renderAvatar();
                     })
@@ -121,6 +121,7 @@ function generateSignUpUI(){
     });
 }
 
+// This could be a class ui handlers
 function generateLoggedInUI(user){
     fetch("./views/actions.mustache")
     .then(response => response.text())
@@ -145,7 +146,6 @@ function setLoggedInListeners() {
 
     logoutButton.addEventListener("click", () => {
         chrome.runtime.sendMessage({ command: "SignOutUser" }, (response) => {
-            console.log(response.status);
             window.location.reload();
         });
     });
@@ -171,12 +171,10 @@ function fetchBookmarks(user){
         (response) => {
             if (response.content.length ){
                 
-                console.log(response.content.length);
                 generateBookmarkListItem(response.content);
                 
                 
             } else {
-                console.log("no bookmarks found")
                 let emptyList = document.createElement("P");
                 emptyList.innerText = "Looks like there are no Bookmarks in there..\n Start by:";
                 emptyList.classList.add( "paragraph-text", "margin-bottom-medium");
@@ -358,7 +356,6 @@ function toggleBookmarkOverlay(pageInfo) {
             //TODO add tags suggestion
             const bmTags = bookmarkForm.tags.value;
             if (bmTitle === "" || bmUrl === "") {
-                console.log("something is missing man");
                 if (!bmTitle) {
                     bookmarkForm.title.classList.add("input-error");
                 }
@@ -384,7 +381,6 @@ function toggleBookmarkOverlay(pageInfo) {
                     },
                 },
                 (response) => {
-                    console.log(response);
                     window.location.reload();
                 }
             );
@@ -448,19 +444,15 @@ let popBookmarkSyncOverlay = function(bookmarksTree){
             bookMarks = logTree(bookmarksTree[0].children[child], bookMarks);
         }
         chrome.storage.local.get(["bookmarks"], (response) => {
-            console.log(response.bookmarks);
             data["bookmarks"] = bookMarks.filter(bookmark => {
                 let isContainer = false;
                 response.bookmarks.forEach(savedBookmark => {               
                     if(savedBookmark.doc_data.bm_url == bookmark.url){
-                        console.log(savedBookmark.doc_data.bm_url);
-                        console.log(bookmark.url)     
                         isContainer = true;
                     }
                 })
                 return !isContainer;
             })
-            console.log(data.bookmarks);
             fetch("./views/bookmarksSync.mustache")
             .then(response=>response.text())
             .then(template => {
@@ -496,7 +488,6 @@ function selectAllBookmarkTree(){
 }
 
 function closeBookmarkSyncOverlay(){
-    console.log("yo");
     let bookmarkSyncOverlay = document.querySelector(".bookmark-sync-overlay");
     bookmarkSyncOverlay.style.animation = "dragUp 1s forwards";
     setTimeout (()=>{
@@ -518,7 +509,7 @@ function syncBookmarks(){
         }
         bookmarkData.push(bookmarkObj)
     })
-    // console.log(bookmarkData);
+
     if(bookmarksToSync.length > 0){
         chrome.runtime.sendMessage(
             {
@@ -528,7 +519,7 @@ function syncBookmarks(){
                 },
             },
             (response) => {
-                console.log(response);
+
                 let bookmarkSyncOverlay = document.querySelector(".bookmark-sync-overlay");
                 bookmarkSyncOverlay.style.animation = "dragUp 1s forwards";
                 setTimeout (()=>{
@@ -541,19 +532,12 @@ function syncBookmarks(){
 }
 
 function logTree(bookmarksItem, bookMarks){
-    // console.log("Logging bookmarks Item");
-    // console.log(bookmarksItem);
     if(bookmarksItem.children){
-        // console.log("##########################################")
-        // console.log(bookmarksItem.title);
-        // console.log("################################################")
         for(child of bookmarksItem.children){
             bookMarks = logTree(child, bookMarks);
         }
     }if(bookmarksItem.url){
         let bookmark = {};
-        // console.log(bookmarksItem.title)
-        // console.log(bookmarksItem.url)
         bookmark["title"] = bookmarksItem.title;
         bookmark["url"] = decodeURI(bookmarksItem.url);
         bookMarks.push(bookmark);
@@ -583,3 +567,9 @@ function renderAvatar(){
             profileImage.setAttribute("src", image);
     })
 }
+
+
+
+let contextMenuFastSave = () => {
+    console.log("clicked");
+} 

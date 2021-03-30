@@ -11,12 +11,15 @@
         },
         "default_popup": "popup.html"
     },
-
+    "icons":{
+        "16":"/assets/icons/16x16.png"
+    },
     "permissions": [
         "activeTab",
         "tabs",
         "storage",
-        "bookmarks"
+        "bookmarks",
+        "contextMenus"
     ],
 
     "background":{
