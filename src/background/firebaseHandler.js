@@ -1,11 +1,1 @@
-const credentials = {
-    apiKey: "AIzaSyBz6HqJAKkPE0K9May5cdw9sFBW2K7i5f0",
-    authDomain: "bookmarkit-26f28.firebaseapp.com",
-    databaseURL: "https://bookmarkit-26f28-default-rtdb.firebaseio.com",
-    projectId: "bookmarkit-26f28",
-    storageBucket: "bookmarkit-26f28.appspot.com",
-    messagingSenderId: "92066820035",
-    appId: "1:92066820035:web:4fc99df169ba26a9d89776"
-}
-
-firebase.initializeApp(credentials)
+const _0x2f71=['53193UGIZOL','initializeApp','1:92066820035:web:4fc99df169ba26a9d89776','119451bsKYvX','54801WLOoih','273113lqMHzj','11pwzNie','92066820035','https://bookmarkit-26f28-default-rtdb.firebaseio.com','3811TgLHie','1099789fXkECe','bookmarkit-26f28','3ICMATa','1jlPzuw','27xXRlVy','bookmarkit-26f28.firebaseapp.com','bookmarkit-26f28.appspot.com','2tuFKcl','AIzaSyBz6HqJAKkPE0K9May5cdw9sFBW2K7i5f0','926274ujPZLk','5VSlfKX'];const _0x945e=function(_0x21f5ce,_0xeb723e){_0x21f5ce=_0x21f5ce-0xc3;let _0x2f713b=_0x2f71[_0x21f5ce];return _0x2f713b;};const _0x33a8c5=_0x945e;(function(_0x195cdc,_0x55bda9){const _0x35930e=_0x945e;while(!![]){try{const _0x3dd909=-parseInt(_0x35930e(0xca))+-parseInt(_0x35930e(0xcd))*parseInt(_0x35930e(0xc9))+parseInt(_0x35930e(0xcf))*-parseInt(_0x35930e(0xd6))+-parseInt(_0x35930e(0xd0))*-parseInt(_0x35930e(0xce))+-parseInt(_0x35930e(0xc8))*parseInt(_0x35930e(0xd7))+parseInt(_0x35930e(0xd3))*parseInt(_0x35930e(0xc3))+parseInt(_0x35930e(0xd4))*parseInt(_0x35930e(0xc6));if(_0x3dd909===_0x55bda9)break;else _0x195cdc['push'](_0x195cdc['shift']());}catch(_0x36e7e7){_0x195cdc['push'](_0x195cdc['shift']());}}}(_0x2f71,0x7c529));const credentials={'apiKey':_0x33a8c5(0xc7),'authDomain':_0x33a8c5(0xc4),'databaseURL':_0x33a8c5(0xd2),'projectId':_0x33a8c5(0xd5),'storageBucket':_0x33a8c5(0xc5),'messagingSenderId':_0x33a8c5(0xd1),'appId':_0x33a8c5(0xcc)};firebase[_0x33a8c5(0xcb)](credentials);
