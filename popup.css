@@ -253,24 +253,7 @@ input[type="checkbox"]:checked{
     font-size: 1.3rem;
 }
 
-/* .bookmark-link{
-    position: absolute;
-    top:50%;
-    right: 14%;
-    transform: translate(-50%, -50%);
-}
 
-.bookmark-copy-icon{
-    top:50%;
-    right: 6.5%;
-}
-
-.bookmark-delete-icon{
-    top:50%;
-    right: 2%;    
-}
-
-*/
 
 .bookmark-options-container{
     position: absolute;
@@ -325,7 +308,17 @@ input[type="checkbox"]:checked{
     transform: translate(-50%, -50%);
 }
 
-
+.message-container{
+    position: absolute;
+    top: 8.5%;
+    left: 0;
+    background: rgb(255 171 21 / 95%);
+    padding: 1.2rem 2rem 1.2rem 2rem;
+    font-weight: 600;
+    font-size: 1.6rem;
+    color: #f7f7f7;
+    transition: all .2;
+}
 
  .text-dark{
  
@@ -569,6 +562,28 @@ input[type="checkbox"]:checked{
     }
     100%{
         transform: translateY(-110%);
+        display: none;
+    }
+}
+
+@keyframes dragRight{
+    0%{
+        transform: translateX(-110%);
+    }
+    100%{
+        transform: translateX(0);
+        display: none;
+    }
+}
+
+
+
+@keyframes dragLeft{
+    0%{
+        transform: translateX(0);
+    }
+    100%{
+        transform: translateX(-110%);
         display: none;
     }
 }
