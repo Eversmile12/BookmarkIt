@@ -76,3 +76,26 @@ chrome.runtime.onMessage.addListener((message,sender, callback) => {
     }
     return true;
 })
+
+
+chrome.runtime.onMessage.addListener((message, sender, callback) => {
+  if(message.command == "ResetUserPassword"){
+    const userEmail = message.data.email
+    //TODO: add check if mail is valid
+    firebase.auth().sendPasswordResetEmail(userEmail)
+    .then((response) => {
+      callback({
+        status: "success",
+        message: "Email sent! Check your inbox!",
+        response: response
+      })
+    }).catch(e => {
+      callback({
+        status: "failed",
+        message: "User not found",
+        response: e
+      })
+      console.log(e);
+    })
+  }
+})

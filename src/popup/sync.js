@@ -112,7 +112,7 @@ function syncBookmarks(){
             }
         );
     }else{
-        displayMessage("Start by selecting a couple of bookmarks",4000)
+        displayMessage("Start by selecting a couple of bookmarks",3000)
     };
 }
 

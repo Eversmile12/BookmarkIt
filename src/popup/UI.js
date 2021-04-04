@@ -58,21 +58,45 @@ function generateLoginUI(){
                 e.preventDefault();
                 const email = loginForm["login-email"].value;
                 const password = loginForm["login-password"].value;
-                console.log("Login has been called")
-                //Login user
-                chrome.runtime.sendMessage(
-                    {
-                        command: "LoginUser",
-                        data: { email: email, password: password },
-                    },
-                    (response) => {
-                        if (response.status == "failed") {
-                            displayError(response.message, 1);
-                        }else{
-                            window.location.reload()
+                if(email.length > 0 && password.length > 0){
+                    chrome.runtime.sendMessage(
+                        {
+                            command: "LoginUser",
+                            data: { email: email, password: password },
+                        },
+                        (response) => {
+                            if (response.status == "failed") {
+                                const loginForm = document.querySelector(".login-form__text-box")
+                                displayMessage("Your email or password are not correct", "error");
+                                const recoveryBtn = document.querySelector(".recovery-btn")
+                                if(recoveryBtn){
+                                    loginForm.removeChild(recoveryBtn)
+                                }
+                                
+                                let passwordRecoveryButton = document.createElement("a")
+                                passwordRecoveryButton.addEventListener("click", () => {
+                                    togglePasswordRecoveryOverlay();
+                                })
+                                passwordRecoveryButton.classList.add("btn-text", "margin-left-small", "recovery-btn")
+                                passwordRecoveryButton.innerText= "Forgot your password?"
+                                loginForm.appendChild(passwordRecoveryButton)
+                            }else{
+                                window.location.reload()
+                            }
                         }
+                    );
+                    
+                }else{
+                    //TODO: refactor using dom object thing
+                    displayMessage("Hey, Something is missing", "error")
+                    if(!email.length > 0){
+                        loginForm["login-email"].classList.add("input-error")
+                    }else if(!password.length > 0){
+                        loginForm["login-password"].classList.add("input-error")
                     }
-                );
+                }
+                //Login user
+                
             });
         })
         
@@ -115,21 +139,29 @@ function generateSignUpUI(){
             e.preventDefault();
             const email = signupForm["signup-email"].value;
             const password = signupForm["signup-password"].value;
-        
-            chrome.runtime.sendMessage(
-                {
-                    command: "SignUpUser",
-                    data: { email: email, password: password },
-                },
-                (response) => {
-                    if (response.status == "failed") {
-                        displayError(response.message, 1);
-                    }else{
-                        window.location.reload()
-                        displayMessage(response.message)
+            if(email.length > 0 && password.length > 0){
+                chrome.runtime.sendMessage(
+                    {
+                        command: "SignUpUser",
+                        data: { email: email, password: password },
+                    },
+                    (response) => {
+                        console.log(response)
+                        if (response.status == "failed") {
+                            displayMessage(response.message, "error", 3000);
+                        }else{
+                            window.location.reload()
+                        }
                     }
+                );
+            }else{
+                displayMessage("Hey, Something is missing", "error")
+                if(!email.length > 0){
+                    signupForm["signup-email"].classList.add("input-error")
+                }else if(!password.length > 0){
+                    signupForm["signup-password"].classList.add("input-error")
                 }
-            );
+            }            
         });
     });
 }
@@ -204,11 +236,19 @@ function displayError(error, type, color) {
     form.parentNode.insertBefore(errorMessage, form.nextSibling);
 }
 
-function displayMessage(message, timeout=2800){
+function displayMessage(message,type = "update", timeout=2800 ){
     const body = document.querySelector("body")
-    let messageContainer = document.querySelector(".message-container")
     messageContainer = document.createElement("div")
     messageContainer.classList.add("message-container")
+    
+    switch(type){
+        case "update":
+            messageContainer.classList.add("message-update")
+        break;
+        case "error":
+            messageContainer.classList.add("message-error")
+        break;
+    }
     const messageBody = document.createElement("p")
     messageBody.innerText = message
     messageContainer.appendChild(messageBody)
@@ -218,9 +258,60 @@ function displayMessage(message, timeout=2800){
     setTimeout(() => {
         messageContainer.style.animation = "dragLeft 1s forwards";
         setTimeout(()=>{
-            body.removeChild(messageContainer)
-        },timeout/2)
+            let errorMessages = [...document.querySelectorAll(".message-container")]
+            errorMessages.forEach(errorMessage => {
+                body.removeChild(errorMessage)
+            })
+        },timeout)
     },timeout)
 
 
 }
+
+function togglePasswordRecoveryOverlay(){
+
+        fetch("./views/password-recovery-overlay.mustache")
+        .then(response => response.text())
+        .then(template => {
+            var render = Mustache.render(template);
+            const overlay = document.createElement("div")
+            const actionsContainer = document.querySelector(".actions-container")
+            overlay.classList.add("overlay")
+            overlay.innerHTML += render;
+            actionsContainer.appendChild(overlay);
+            document.querySelector(".overlay").style.animation = "dragDown 1s forwards";
+            console.log("Mustache actions fetched")
+            const passwordRecoveryForm = document.querySelector("#password-recovery-form")
+            passwordRecoveryForm.addEventListener("submit", (e)=>{
+                e.preventDefault();
+                const email = passwordRecoveryForm["recovery-email"].value
+                if(email.length > 0){
+                    chrome.runtime.sendMessage({ command: "ResetUserPassword",   data: { email: email} }, (response) => {
+                        console.log(response)
+                        if(response.status == "success"){
+                            displayMessage(response.message)
+                            document.querySelector(".overlay").style.animation = "dragUp 1s forwards";
+                            setTimeout(()=>{
+                                actionsContainer.removeChild(overlay)
+                            },800)
+                        }else{
+                            displayMessage(response.message)
+                        }
+                    })
+                }else{
+                    displayMessage("Please, insert an email", "error", 3000)
+                    passwordRecoveryForm["recovery-email"].classList.add("input-error")
+                   
+                }
+              
+                
+            })
+            document.querySelector("#close-bookmark-button").addEventListener("click", () => {
+                document.querySelector(".overlay").style.animation = "dragUp 1s forwards";
+                setTimeout(()=>{
+                    actionsContainer.removeChild(overlay)
+                },800)
+            })
+        })
+    }
+  
