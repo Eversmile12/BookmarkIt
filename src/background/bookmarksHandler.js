@@ -59,7 +59,7 @@ chrome.runtime.onMessage.addListener((message,sender,callback) =>{
   })
 
   
-//TODO: REVIEW BOOKMARKS SYNCH
+//TODO: REVIEW BOOKMARKS SYNC
 
 chrome.runtime.onMessage.addListener((message,sender,callback) =>{
   if(message.command == "syncUserBookmarks"){

@@ -185,6 +185,7 @@ function setLoggedInListeners() {
     console.log("setting up logged in listeners")
     const logoutButton = document.querySelector("#logout-btn");
     const bookmarkButton = document.querySelector("#bookmark-btn");
+    toggleBookmarkButton()
     const closeBookmarkButton = document.querySelector(
         "#close-bookmark-button"
     );

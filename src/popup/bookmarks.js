@@ -34,10 +34,8 @@ function generateBookmarkListItem(bookmarks){
 
     let bookmarksList = document.createElement("ul");
     bookmarksList.classList.add("bookmark-list");    
-    console.log(bookmarks)
     bookmarks.forEach((bookmark) => {
         if(bookmark){        
-        console.log(bookmark)
         const bookmarkItem = document.createElement("LI");
         bookmarkItem.classList.add("bookmark-item");
         
@@ -57,9 +55,10 @@ function generateBookmarkListItem(bookmarks){
        
         bookmarkIcon.setAttribute("alt", "icon of the bookmarked page");
 
-
-        const bookmarkTitle = document.createElement("P");
+        const bookmarkTitle = document.createElement("a")
+        bookmarkTitle.setAttribute("href", bookmark.bmUrl)
         bookmarkTitle.innerText = bookmark.bmTitle;
+        bookmarkTitle.setAttribute("target", "_blank")
         bookmarkTitle.classList.add("bookmark-title");
         
         
@@ -216,7 +215,7 @@ async function toggleBookmarkOverlay(pageInfo) {
 
             const bmTitle = bookmarkForm.title.value;
             const bmUrl = bookmarkForm.url.value;
-            //TODO add tags suggestion
+            //TODO Add tags suggestion
             const bmTags = bookmarkForm.tags.value;
             if (bmTitle === "" || bmUrl === "") {
                 if (!bmTitle) {
@@ -225,11 +224,7 @@ async function toggleBookmarkOverlay(pageInfo) {
                 if (!bmUrl) {
                     bookmarkForm.url.classList.add("input-error");
                 }
-                displayError(
-                    "Mh, looks like something it's missing",
-                    3,
-                    "text-light"
-                );
+                displayMessage("Mh, looks like something it's missing", "error")
                 return;
             }
 
@@ -264,4 +259,25 @@ async function toggleBookmarkOverlay(pageInfo) {
             bookmarkOverlay.style.display = "none"; }, 1000)
         
     }
+}
+
+//TODO: Check if it already bookmarked and only return a boolean
+// Use it also for fast bookmarking via context menu
+// At the moment it doesn't update realtime once you've bookmarked your page
+function toggleBookmarkButton(){
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        chrome.storage.local.get(["ubookmarks"], (storage) => {
+            if(storage.ubookmarks){
+                    storage.ubookmarks.forEach(bookmark => {
+                        if(bookmark.bmUrl === tabs[0].url){
+                            const bookmarkButton = document.querySelector("#bookmark-btn");
+                            bookmarkButton.classList.add("btn-disabled")
+                            displayMessage("Page already bookmarked", "update")
+                            return true;
+                        }else{
+                        }
+                    })
+            }
+        })
+    })
 }

@@ -35,7 +35,7 @@ input[type="checkbox"]:checked{
 }
 
 .footer-main{
-    background-color:#0F7EE4 ;
+    background-color:#194aec ;
     font-size: 1.3rem;
     color: #f7f7f7;
     text-align: center;
@@ -250,16 +250,23 @@ input[type="checkbox"]:checked{
 
 .bookmark-list{
     border: 1px solid #333333;
-    height: 15rem;
+    height: 18rem;
     overflow-y: scroll;
     list-style: none;
     border: none;
 }
 
 .bookmark-item{
-    padding: .5rem 0 ;
+    padding: .7rem 0 .6rem 0;
     padding-left: 4rem;
     position: relative;
+    box-shadow: 0 .2rem .1rem .1rem rgba(97, 97, 97, .1) ;
+    text-align: left;
+    transition: all .2s;
+}
+
+.bookmark-item:hover{
+    box-shadow: 0 .1rem .1rem .1rem inset rgba(97, 97, 97, .2) ;
 }
 
 .bookmark-item:nth-child(odd){
@@ -271,7 +278,14 @@ input[type="checkbox"]:checked{
 
 .bookmark-title{
     display: inline;
-    font-size: 1.3rem;
+    font-size: 1.4rem;
+    text-decoration: none;
+    color: #1d1d1d;
+    transition: all .2s;
+}
+
+.bookmark-title:hover{
+    color: #707070; 
 }
 
 
@@ -285,6 +299,7 @@ input[type="checkbox"]:checked{
 .bookmark-menu-icon{
     transition: all .2s;
     opacity: .6;
+    cursor: pointer;
 }
 
 .bookmark-menu-icon-active{
@@ -324,8 +339,8 @@ input[type="checkbox"]:checked{
 
 .bookmark-icon{
     position: absolute;
-    top:50%;
-    left: 3%;
+    top:55%;
+    left: 4%;
     transform: translate(-50%, -50%);
 }
 
@@ -517,7 +532,7 @@ input[type="checkbox"]:checked{
     padding: .8rem 1rem;
     width: 60%;
     text-transform: capitalize;
-    margin: 2rem 0rem 1rem 0;
+    margin: 1.5rem 0rem 1rem 0;
     border-radius: 100px;
     border: none;
     box-shadow: 0 .2rem 1rem rgba(49, 49, 49, .1);
