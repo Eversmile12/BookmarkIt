@@ -1,14 +1,6 @@
 
 chrome.storage.onChanged.addListener(handleBookmarks)
 
-// function logChanges(changes, area){
-//   if(changedItems.includes("ubookmarks")){
-//     console.log("Change in bookmarks detected now updating")
-//     handleBookmarks()
-//   }
-// }
-
-
 function handleBookmarks(){
     chrome.storage.local.get(["ubookmarks"], response => {
         if(response){
@@ -59,8 +51,7 @@ function generateBookmarkListItem(bookmarks){
         bookmarkTitle.setAttribute("href", bookmark.bmUrl)
         bookmarkTitle.innerText = bookmark.bmTitle;
         bookmarkTitle.setAttribute("target", "_blank")
-        bookmarkTitle.classList.add("bookmark-title");
-        
+        bookmarkTitle.classList.add("bookmark-title");      
         
 
 
@@ -128,7 +119,7 @@ function generateBookmarkListItem(bookmarks){
                     if(response.status == "success"){
                         displayMessage(response.message)
                     }else{
-                        displayError(response.message, 1)
+                        displayMessage(response.message, "error")
                     }
                 })
             }
@@ -155,41 +146,22 @@ function generateBookmarkListItem(bookmarks){
 
     container.appendChild(bookmarksList);
     container.style.display = "block";
+
    
 }
 
 
-
 async function getPageInfo(callback) {
-    let pageInfo = []
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        let tabTitle = tabs[0].title.substring(0, 40);
-        let tabUrl = tabs[0].url;
-        let favIcon = tabs[0].favIconUrl;
-        pageInfo.push(tabTitle);
-        pageInfo.push(tabUrl);
-        pageInfo.push(favIcon);
-        callback(pageInfo)
+    chrome.runtime.sendMessage({command: "getPageInfo"}, response =>{
+        if(response.status == "success"){
+            console.log("Page info has been fetched")
+            callback(response.pageInfoData)
+        }else{
+            displayMessage("Ops, and error has occurred", "error")
+        }
     })
 }
 
-// function fastSaveBookmark(pageInfo){
-//     console.log("Fast Saving bookmark")
-//     chrome.runtime.sendMessage(
-//         {
-//             command: "addBookmark",
-//             bookmark: {
-//                 bmTitle: pageInfo[0],
-//                 bmUrl: pageInfo[1],
-//                 bmTags: "",
-//                 bmIcon: pageInfo[2],
-//             },
-//         },
-//         (response) => {
-//            alert("bookmark saved")
-//         }
-//     );
-// }
 
 async function toggleBookmarkOverlay(pageInfo) {
 
@@ -240,12 +212,12 @@ async function toggleBookmarkOverlay(pageInfo) {
                 },
                 (response) => {
                     console.log("Getting updated bookmarks")
-                    // chrome.storage.local.get(function(result){console.log(result)});
+
                     bookmarkOverlay.style.animation = "dragUp 1s forwards";
                     if(response.status == "success"){
                         displayMessage(response.message)
                     }else{
-                        displayError(response.message, 1)
+                        displayMessage(response.message, "error")
                     }
                 }
             );
@@ -272,7 +244,7 @@ function toggleBookmarkButton(){
                         if(bookmark.bmUrl === tabs[0].url){
                             const bookmarkButton = document.querySelector("#bookmark-btn");
                             bookmarkButton.classList.add("btn-disabled")
-                            displayMessage("Page already bookmarked", "update")
+                            displayMessage("Oyeah, already bookmarked!", "update")
                             return true;
                         }else{
                         }
