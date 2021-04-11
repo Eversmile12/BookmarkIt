@@ -7,17 +7,26 @@ let popBookmarkSyncOverlay = function(bookmarksTree){
             bookmarks = logTree(bookmarksTree[0].children[child], bookmarks);
         }
         console.log(bookmarks)
+
         chrome.storage.local.get(["ubookmarks"], (storage) => {
-            data["ubookmarks"] = bookmarks.filter(bookmark => {
-                let isNew = true;
-                storage.ubookmarks.forEach(storageBookmark => {
-                    if(storageBookmark){
-                        if(storageBookmark.bmUrl == bookmark.url)
-                        isNew = false;
-                    }               
-                })
-                return isNew;
-            })
+            savedBookmarks = storage.ubookmarks["chrome-bookmarks"]
+
+            if(savedBookmarks){
+                if(savedBookmarks.length > 0){
+                    data["ubookmarks"] = bookmarks.filter(bookmark => {
+
+                        for(item in savedBookmarks){
+                            if(savedBookmarks[item].bmUrl == bookmark.url){
+                                return false;
+                            }                           
+                        }
+                        return true;
+                        
+                    })
+                }
+            }else{
+                data["ubookmarks"] = bookmarks
+            }
 
             fetch("./views/bookmarksSync.mustache")
             .then(response=>response.text())
@@ -29,7 +38,6 @@ let popBookmarkSyncOverlay = function(bookmarksTree){
     
                 document.querySelector("body").appendChild(container);
                 document.querySelector(".bookmark-sync-overlay").style.animation = "dragDown 1s forwards";
-                let bookmarksToSync = [...document.querySelectorAll(".toSync")]
                 document.querySelector("#sync-action-btn").addEventListener("click", syncBookmarks)
                 document.querySelector("#close-bookmark-sync-btn").addEventListener("click", closeBookmarkSyncOverlay);
                 document.querySelector("#select-all-btn").addEventListener("click", selectAllBookmarkTree);
@@ -82,17 +90,18 @@ function syncBookmarks(){
     bookmarksToSync = bookmarksToSync.filter(bookmarksToSync => {
         return bookmarksToSync.checked
     })
-    let bookmarkData = [];
+    let bookmarkData = {};
     bookmarksToSync.forEach(bookmark => {
         let bookmarkObj = {
-            bmTitle: bookmark.dataset.title,
-            bmUrl: bookmark.dataset.url
+            bmTitle: bookmark.dataset.title.substring(0, 40),
+            bmUrl: bookmark.dataset.url,
+            group: "chrome-bookmarks"
         }
         
-        bookmarkData.push(bookmarkObj)
+        bookmarkData[bookmark.dataset.title] = bookmarkObj
     })
     
-    if(bookmarkData.length > 0){
+    if(bookmarkData){
         console.log("Calling syncUserBookmarks")
         console.log(bookmarkData)
         chrome.runtime.sendMessage(
@@ -107,12 +116,12 @@ function syncBookmarks(){
                 bookmarkSyncOverlay.style.animation = "dragUp 1s forwards";
                 setTimeout (()=>{
                     document.querySelector("body").removeChild(bookmarkSyncOverlay);
-                    displayMessage(response.message)
+                    displayMessage(response.message, "update")
                 },1000)
             }
         );
     }else{
-        displayMessage("Start by selecting a couple of bookmarks",3000)
+        displayMessage("Start by selecting a couple of bookmarks","update",3000)
     };
 }
 

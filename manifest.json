@@ -1,8 +1,8 @@
 {
     "manifest_version": 2,
     "name": "Bookmark It!",
-    "description": "Organize your bookmarks like never before",
-    "version": "0.0.1",
+    "description": "Unstable version, shouldn't be public",
+    "version": "0.5",
     "browser_action": {
         "default_icon": {
             "16": "/assets/icons/16x16.png",

@@ -5,7 +5,7 @@
 
 chrome.runtime.onMessage.addListener((message, sender, callback) => {
     if(message.command == "getPageInfo"){
-        console.log("Get page info has been called")
+        // console.log("Get page info has been called")
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             let pageInfo = []
             let tabTitle = tabs[0].title.substring(0, 40);

@@ -1,5 +1,6 @@
 window.onload = () => {
     chrome.browserAction.setBadgeText({text: ""})
+    chrome.storage.local.set({bookmarksSelectionList: {} })
     chrome.runtime.sendMessage({ command: "checkUserLoginStatus" }, (isLoggedIn) => {
         console.log(isLoggedIn)
         uiHandler(isLoggedIn.status)

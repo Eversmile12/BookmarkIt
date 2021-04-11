@@ -5,11 +5,12 @@ function updateUserOnLocalStorage(user){
 }
 
 async function updateBookmarksOnLocalStorage(uuid){
-    console.log("updateBookmarksOnLocalStore called for:" + uuid )
+    console.log("updateBookmarksOnLocalStore called for: " + uuid )
     const getUserBookmarks = firebase.functions().httpsCallable("getUserBookmarks")
     getUserBookmarks({uuid: uuid})
     .then( result =>  {
         if(result.data){
+            console.log(result.data)
             chrome.storage.local.set({ubookmarks : result.data})
         }else{
             chrome.storage.local.set({ubookmarks : []})
@@ -18,6 +19,52 @@ async function updateBookmarksOnLocalStorage(uuid){
     })
     return true;
 }
+
+
+chrome.runtime.onMessage.addListener((message, sender, callback)=> {
+    if(message.command == "addBookmarkToSelectionListStorage"){
+        console.log("addbookmarktoselectionlist: called on " + message.data.bmId)
+
+        chrome.storage.local.get(["ubookmarks"], savedBookmarks => {
+
+            chrome.storage.local.get(["bookmarksSelectionList"], (storage) => {
+                console.log(storage.bookmarksSelectionList)
+
+                let bookmarksSelectionList = {};
+                let bookmarkTodAdd;
+
+                if(storage.bookmarksSelectionList){
+                    bookmarksSelectionList = storage.bookmarksSelectionList
+                    console.log(message.data.groupId.length)
+                }
+                
+                if(message.data.groupId){
+                    bookmarkTodAdd = savedBookmarks.ubookmarks[message.data.groupId].children[message.data.bmId]
+                }else{
+                    bookmarkTodAdd = savedBookmarks.ubookmarks[message.data.bmId]
+                }
+                bookmarksSelectionList[message.data.bmId] = bookmarkTodAdd
+                chrome.storage.local.set({bookmarksSelectionList: bookmarksSelectionList })
+                callback()
+            })
+            return true
+        })
+       
+    }else if(message.command == "removeBookmarkToSelectionListStorage"){
+        console.log("removeBookmarkToSelectionListStorage: called")
+        chrome.storage.local.get(["bookmarksSelectionList"], (storage) => {
+            let bookmarksSelectionList = storage.bookmarksSelectionList
+            delete bookmarksSelectionList[message.data.bmId]
+            chrome.storage.local.set({bookmarksSelectionList: bookmarksSelectionList })
+            callback()
+        })
+        return true
+    }
+})
+
+
+
+
 
 
 // function deleteUserFromLocal(){
