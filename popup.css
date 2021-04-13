@@ -307,8 +307,8 @@ input[type="checkbox"]:checked{
 
 .bookmark-options-container{
     position: absolute;
-    right: 5%;
-    bottom: 10%;
+    right: 4%;
+    top: 30%;
 }
 
 .bookmark-menu-icon{

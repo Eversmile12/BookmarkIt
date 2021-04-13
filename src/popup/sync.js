@@ -91,37 +91,39 @@ function syncBookmarks(){
         return bookmarksToSync.checked
     })
     let bookmarkData = {};
-    bookmarksToSync.forEach(bookmark => {
-        let bookmarkObj = {
-            bmTitle: bookmark.dataset.title.substring(0, 40),
-            bmUrl: bookmark.dataset.url,
-            group: "chrome-bookmarks"
-        }
-        
-        bookmarkData[bookmark.dataset.title] = bookmarkObj
-    })
-    
-    if(bookmarkData){
-        console.log("Calling syncUserBookmarks")
-        console.log(bookmarkData)
-        chrome.runtime.sendMessage(
-            {
-                command: "syncUserBookmarks",
-                data: {
-                    bookmarks : bookmarkData
-                },
-            },
-            (response) => {
-                let bookmarkSyncOverlay = document.querySelector(".bookmark-sync-overlay");
-                bookmarkSyncOverlay.style.animation = "dragUp 1s forwards";
-                setTimeout (()=>{
-                    document.querySelector("body").removeChild(bookmarkSyncOverlay);
-                    displayMessage(response.message, "update")
-                },1000)
+    chrome.storage.local.get(["uuid"], storage => {
+        bookmarksToSync.forEach(bookmark => {
+            let bookmarkObj = {
+                bmTitle: bookmark.dataset.title.substring(0, 40),
+                bmUrl: bookmark.dataset.url,
+                group: "chrome-bookmarks-" + storage.uuid
             }
-        );
-    }else{
-        displayMessage("Start by selecting a couple of bookmarks","update",3000)
-    };
+            
+            bookmarkData[bookmark.dataset.title] = bookmarkObj
+        })
+        
+        if(bookmarkData){
+            console.log("Calling syncUserBookmarks")
+            console.log(bookmarkData)
+            chrome.runtime.sendMessage(
+                {
+                    command: "syncUserBookmarks",
+                    data: {
+                        bookmarks : bookmarkData
+                    },
+                },
+                (response) => {
+                    let bookmarkSyncOverlay = document.querySelector(".bookmark-sync-overlay");
+                    bookmarkSyncOverlay.style.animation = "dragUp 1s forwards";
+                    setTimeout (()=>{
+                        document.querySelector("body").removeChild(bookmarkSyncOverlay);
+                        displayMessage(response.message, "update")
+                    },1000)
+                }
+            );
+        }else{
+            displayMessage("Start by selecting a couple of bookmarks","update",3000)
+        };
+    })    
 }
 

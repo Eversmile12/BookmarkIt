@@ -15,9 +15,7 @@ async function updateBookmarksOnLocalStorage(uuid){
         }else{
             chrome.storage.local.set({ubookmarks : []})
         }
-        console.log("bookmarks updated, now firing callback")
     })
-    return true;
 }
 
 

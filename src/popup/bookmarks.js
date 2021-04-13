@@ -34,16 +34,19 @@ const generateGroupBtn = () => {
     createGroupBtn.addEventListener("click", () => {
         console.log("Creating group")
         const grpName = prompt("Give it a name!", "NewGroup")
-        chrome.runtime.sendMessage({command: "createNewGroup", data:{
-            grp: grpName //TODO: add possibility to add group name
-        }}, response => {
-            if(response.status == "success"){
-                displayMessage(response.message, "update")
-            }else{
-                displayMessage(response.message, "error")
-            }
-            
-        })
+        if(grpName){
+            chrome.runtime.sendMessage({command: "createNewGroup", data:{
+                grp: grpName //TODO: add possibility to add group name
+            }}, response => {
+                if(response.status == "success"){
+                    displayMessage(response.message, "update")
+                }else{
+                    displayMessage(response.message, "error")
+                }
+                
+            })
+        }
+       
     })
 
     return createGroupBtn;
